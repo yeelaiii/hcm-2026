@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCMC '26 — Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F1E8; --card:#FFF; --ink:#23241F; --soft:#6C6E63; --line:#E4E0D3;
+    --d1:#E86A3C; --thao:#2FA090; --d3:#E0669A; --night:#6B54E6; --base:#CF9A2C; --scoot:#F4E035;
+    --must:#D8433B; --want:#2FA090; --maybe:#9A8F72;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;padding-bottom:60px}
+  .wrap{max-width:580px;margin:0 auto;padding:0 14px}
+  button{font-family:inherit}
+  a{color:inherit}
+
+  .pass{background:var(--scoot);border-radius:18px;margin:16px 0 10px;padding:16px 18px 14px;color:#171712;position:relative;overflow:hidden;box-shadow:0 6px 22px rgba(140,120,0,.18)}
+  .pass::before,.pass::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:var(--paper);top:50%;transform:translateY(-50%)}
+  .pass::before{left:-11px}.pass::after{right:-11px}
+  .pass .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .pass h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;margin:0;line-height:1}
+  .pass .ref{font-size:11px;font-weight:600;opacity:.7;font-variant-numeric:tabular-nums}
+  .pass .who{font-weight:600;font-size:13px;margin-top:2px}
+  .pass .legs{display:flex;gap:14px;margin-top:12px;padding-top:11px;border-top:1.5px dashed rgba(0,0,0,.28)}
+  .leg{font-size:12px;line-height:1.35}
+  .leg b{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700}
+  .leg span{display:block;opacity:.65;font-weight:500}
+
+  .legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:4px 2px 10px;font-size:11.5px;color:var(--soft)}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
+  .tabs{position:sticky;top:0;z-index:20;background:var(--paper);display:flex;gap:4px;overflow-x:auto;padding:8px 14px;margin:0 -14px;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;border:none;background:transparent;cursor:pointer;color:var(--soft);padding:6px 12px 8px;border-radius:11px;text-align:center;line-height:1.15;transition:.15s}
+  .tab b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
+  .tab small{font-size:10.5px;font-variant-numeric:tabular-nums}
+  .tab .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-top:4px}
+  .tab[aria-selected="true"]{background:var(--ink)}
+  .tab[aria-selected="true"] b,.tab[aria-selected="true"] small{color:var(--paper)}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 2px 6px}
+  .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{border:none;background:transparent;padding:6px 10px;font-size:12px;font-weight:600;color:var(--soft);cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .tbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
+  .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin:8px 2px 12px}
+  .dayhead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;margin:0}
+  .dayhead .sub{color:var(--soft);font-size:12.5px;margin-top:3px}
+  .prog{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  .day{display:none}.day.on{display:block}
+  .line{position:relative;padding-left:26px}
+  .line::before{content:"";position:absolute;left:8px;top:6px;bottom:10px;width:2px;background:var(--line)}
+  .stop{position:relative;margin-bottom:9px}
+  .stop::before{content:"";position:absolute;left:-22px;top:16px;width:11px;height:11px;border-radius:50%;background:var(--z);border:2.5px solid var(--paper);box-shadow:0 0 0 1.5px var(--z)}
+  .card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--z);border-radius:12px;padding:11px 12px;transition:.15s}
+  .top{display:flex;align-items:flex-start;gap:9px}
+  .tick{flex:0 0 auto;width:21px;height:21px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;margin-top:1px;position:relative;transition:.15s}
+  .tick::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--z);transform:scale(0);transition:.15s}
+  .main{flex:1;min-width:0}
+  .hd{cursor:pointer}
+  .nm{font-weight:600;font-size:14.5px;line-height:1.25}
+  .nm .em{margin-right:5px}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:3px}
+  .chip{font-size:10px;font-weight:600;color:#fff;background:var(--z);padding:1px 7px;border-radius:20px}
+  .when{font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .dist{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .dist b{color:var(--ink);font-weight:600}
+  .flag{font-size:10px;font-weight:600;color:#7a5a10;background:#F7E39A;padding:1px 7px;border-radius:20px}
+  .pri{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;border:1.5px solid;cursor:pointer;background:#fff}
+  .pri.must{color:var(--must);border-color:var(--must)}
+  .pri.want{color:var(--want);border-color:var(--want)}
+  .pri.maybe{color:var(--maybe);border-color:var(--maybe)}
+  .pri.none{color:var(--soft);border-color:var(--line)}
+  .body{display:none;margin-top:9px}
+  .stop.open .body{display:block}
+  .desc{font-size:13px;color:var(--soft)}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+  .lk{font-size:12px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;background:#fff;color:var(--ink)}
+  .lk:hover{border-color:var(--z);color:var(--z)}
+  .note{width:100%;margin-top:9px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:inherit;font-size:13px;resize:vertical;min-height:38px;background:#FCFBF6}
+  .note::placeholder{color:#B7B3A4}
+  .editrow{display:none;gap:6px;margin-top:9px}
+  .stop.editing .editrow{display:flex}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .mini.del{color:var(--must);border-color:#f0c9c6}
+  .stop.done .card{opacity:.5}.stop.done .nm{text-decoration:line-through}
+  .stop.done .tick{border-color:var(--z)}.stop.done .tick::after{transform:scale(1)}
+
+  .addform{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:12px;margin:4px 0 10px;display:none}
+  .addform.on{display:block}
+  .addform input,.addform select,.addform textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;margin-bottom:7px;background:#FCFBF6}
+  .addform .g{display:flex;gap:7px}.addform .g>*{flex:1}
+
+  .panelbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+  .panelbox h3{font-family:'Bricolage Grotesque',sans-serif;margin:0 0 4px;font-size:17px}
+  .panelbox .muted{color:var(--soft);font-size:12.5px;margin:0 0 10px}
+  .exp{display:flex;gap:7px;align-items:center;margin-bottom:7px}
+  .exp input{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px;background:#FCFBF6}
+  .exp .lbl{flex:1;min-width:0}.exp .amt{width:96px}
+  .row-e{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .row-e .x{color:var(--must);cursor:pointer;font-weight:700;padding:0 4px}
+  .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;font-weight:700}
+  .total .big{font-family:'Bricolage Grotesque',sans-serif;font-size:22px}
+  .rate{font-size:11.5px;color:var(--soft);margin-top:6px;display:flex;align-items:center;gap:6px}
+  .rate input{width:82px;border:1px solid var(--line);border-radius:7px;padding:4px 7px;font-family:inherit;font-size:12px;font-variant-numeric:tabular-nums}
+  .shot{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .shot .b{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:0 0 auto;position:relative}
+  .shot.done .b{background:var(--d3);border-color:var(--d3)}
+  .shot.done .b::after{content:"✓";color:#fff;font-size:12px;position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .shot.done .t{text-decoration:line-through;color:var(--soft)}
+  details.pub{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0}
+  details.pub summary{font-weight:600;cursor:pointer;font-size:13.5px}
+  details.pub ol{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--soft);line-height:1.7}
+  details.pub code{background:#F1EEE3;padding:1px 5px;border-radius:5px;font-size:12px}
+  footer{text-align:center;color:var(--soft);font-size:11px;padding:18px 0 8px}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:50}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pass">
+    <div class="row"><h1>HCMC '26</h1><span class="ref">SCOOT · LHCL3R</span></div>
+    <div class="who">Elijah + Ashley</div>
+    <div class="legs">
+      <div class="leg"><b>SIN → SGN</b><span>Thu 10 Sep · 14:40</span></div>
+      <div class="leg"><b>SGN → SIN</b><span>Tue 15 Sep · 15:40</span></div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--d1)"></i>District 1</span>
+    <span><i style="background:var(--thao)"></i>Thảo Điền</span>
+    <span><i style="background:var(--d3)"></i>D3 / Tân Định</span>
+    <span><i style="background:var(--night)"></i>Nights</span>
+    <span><i style="background:var(--base)"></i>Base / day trip</span>
+  </div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div id="panels"></div>
+
+  <details class="pub">
+    <summary>Publish to GitHub Pages + export your edits</summary>
+    <ol>
+      <li>Create a repo (e.g. <code>hcmc26</code>) on your GitHub.</li>
+      <li>Upload this file as <code>index.html</code>.</li>
+      <li>Settings → Pages → deploy from <code>main</code> / root. Your site: <code>yeelaiii.github.io/hcmc26</code>.</li>
+      <li>Made edits here? Tap <b>Export</b> (top bar), commit the downloaded <code>trip-data.json</code> next to <code>index.html</code> — now every device (incl. Ashley's) loads your latest plan.</li>
+      <li>New device fresh? It reads <code>trip-data.json</code> automatically. Tap <b>Import</b> to load one manually.</li>
+    </ol>
+  </details>
+  <footer>Edits save on this phone · Export to make them permanent / shared</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const HOME={lat:10.7648,lng:106.6913};
+const Z={d1:'var(--d1)',thao:'var(--thao)',d3:'var(--d3)',night:'var(--night)',base:'var(--base)'};
+const ZN={d1:'D1',thao:'Thảo Điền',d3:'D3',night:'Night',base:'Base'};
+const PRIS=['none','must','want','maybe'];
+const PRILBL={none:'Set priority',must:'Must',want:'Want',maybe:'Maybe'};
+
+const DEFAULT={
+ rate:19000,
+ days:[
+  {key:'thu',tab:'Thu',date:'10',iso:'2026-09-10',dot:'base',title:'Arrival',sub:'Land 14:40 · settle in · easy night',stops:[
+    {id:'d0',t:'16:30',e:'🛬',n:'Airbnb check-in',z:'base',lat:10.7648,lng:106.6913,addr:'Bùi Viện / Phạm Ngũ Lão, Quận 1',d:'Drop bags, settle by 17:00.'},
+    {id:'d1',t:'17:30',e:'🍕',n:'Pizza 4P\u2019s Le Thanh Ton',z:'d1',lat:10.7802,lng:106.7030,addr:'8 Lê Thánh Tôn, Bến Nghé, Quận 1',m:'Pizza 4Ps Le Thanh Ton',flag:'Book ahead',pri:'must',d:'Your must-visit first meal.'},
+    {id:'d2',t:'evening',e:'💆',n:'Scout area + massage',z:'base',d:'Wander home streets, scope shops, cheap foot/body massage to reset.'}
+  ]},
+  {key:'fri',tab:'Fri',date:'11',iso:'2026-09-11',dot:'d1',title:'District 1 + big night',sub:'Toury loop, concept stores, then out',stops:[
+    {id:'f0',t:'09:00',e:'📮',n:'Post Office + Notre Dame',z:'d1',lat:10.7797,lng:106.6990,addr:'2 Công xã Paris, Bến Nghé, Quận 1',m:'Saigon Central Post Office',d:'Do it early, before shops open.'},
+    {id:'f1',t:'10:00',e:'💅',n:'Cosie Nails Town Q1 — Ashley',z:'base',lat:10.7646,lng:106.6880,addr:'245/21 Nguyễn Trãi, Cầu Ông Lãnh, Quận 1',m:'Cosie Nails Town Quan 1 Nguyen Trai',flag:'~2 hrs',pri:'must',d:'5 min from home. Allow 1.5–2.5 hrs. Open till 8pm.'},
+    {id:'f2',t:'',e:'🏢',n:'The Cafe Apartment',z:'d1',lat:10.7745,lng:106.7040,addr:'42 Nguyễn Huệ, Bến Nghé, Quận 1',m:'The Cafe Apartment 42 Nguyen Hue',d:'A whole building of cafés. Photogenic.'},
+    {id:'f3',t:'',e:'🛍️',n:'The New Playground',z:'d1',lat:10.7780,lng:106.7030,addr:'B1–B2, Vincom Center Đồng Khởi, 72 Lê Thánh Tôn, Quận 1',m:'The New Playground Vincom Dong Khoi',pri:'must',d:'The scene\u2019s HQ — ~70 local micro-boutiques.'},
+    {id:'f4',t:'',e:'🛍️',n:'Rue Miche L\u2019Édition',z:'d1',lat:10.7763,lng:106.7024,addr:'Union Square, 171 Đồng Khởi, Bến Nghé, Quận 1',m:'Rue Miche L\u2019Edition Union Square Dong Khoi',flag:'Pricey',pri:'want',d:'Huge curated flagship, across from New Playground.'},
+    {id:'f5',t:'',e:'👕',n:'Vintage Hearts 90s',z:'d1',lat:10.7782,lng:106.7010,addr:'26 Lý Tự Trọng, Bến Nghé, Quận 1',m:'Vintage Hearts 90s Ly Tu Trong',pri:'want',d:'Vintage, levels 2–3.'},
+    {id:'f6',t:'',e:'🧋',n:'Phê La',z:'d1',lat:10.7735,lng:106.7028,addr:'125 Hồ Tùng Mậu, Bến Nghé, Quận 1',m:'Phe La 125 Ho Tung Mau',d:'Viral oolong-tea + rooftop. Mid-shop break.'},
+    {id:'f7',t:'',e:'👕',n:'Lider',z:'d1',lat:10.7710,lng:106.7040,addr:'07 Tôn Thất Thiệp, Bến Nghé, Quận 1',m:'Lider 07 Ton That Thiep',pri:'want',d:'Local brand store.'},
+    {id:'f8',t:'',e:'📸',n:'MonoBooth',z:'d1',lat:10.7712,lng:106.7042,addr:'42 Tôn Thất Thiệp, Bến Nghé, Quận 1',m:'MonoBooth 42 Ton That Thiep',d:'Photo-booth on the same street.'},
+    {id:'f9',t:'',e:'👕',n:'Neo City Thrift',z:'d1',lat:10.7720,lng:106.7028,addr:'107 Tôn Thất Đạm, Bến Nghé, Quận 1',m:'Neo City Thrift Ton That Dam',pri:'want',d:'Tiny 5-star vintage-tee spot.'},
+    {id:'f10',t:'',e:'👕',n:'Compound Garment',z:'d1',lat:10.7690,lng:106.7013,addr:'158 Nguyễn Công Trứ, Nguyễn Thái Bình, Quận 1',m:'Compound Garment Nguyen Cong Tru',pri:'want',d:'Near the river pocket.'},
+    {id:'f11',t:'',e:'🥖',n:'Bánh Mì Huỳnh Hoa',z:'d1',lat:10.7715,lng:106.6924,addr:'26 Lê Thị Riêng, Bến Thành, Quận 1',m:'Banh Mi Huynh Hoa Le Thi Rieng',flag:'Queue',d:'Famous overstuffed banh mì. Go off-peak.'},
+    {id:'f12',t:'18:00',e:'🍢',n:'5KU Station',z:'d1',lat:10.7791,lng:106.7045,addr:'17 Thái Văn Lung, Bến Nghé, Quận 1',m:'5KU Station Thai Van Lung',pri:'want',d:'Open-air table BBQ. Opens 4pm. Short hop to Boosh.'},
+    {id:'f13',t:'20:30',e:'🍸',n:'Boosh Rooftop',z:'night',lat:10.7674,lng:106.6928,addr:'Bùi Viện, Phạm Ngũ Lão, Quận 1',m:'Boosh Rooftop Bui Vien',pri:'must',d:'Start the night here.'},
+    {id:'f14',t:'',e:'🍺',n:'Bui Vien Walking Street',z:'night',lat:10.7674,lng:106.6928,addr:'Bùi Viện, Phạm Ngũ Lão, Quận 1',m:'Bui Vien Walking Street',d:'The party street. Busiest on a Friday.'},
+    {id:'f15',t:'',e:'🕺',n:'Bam',z:'night',lat:10.7758,lng:106.6975,addr:'Bam Bar, Quận 1',m:'Bam bar Ho Chi Minh City',pri:'want',d:'Club to close the night. Walk home.'}
+  ]},
+  {key:'sat',tab:'Sat',date:'12',iso:'2026-09-12',dot:'thao',title:'Riverside + pamper',sub:'Light day — brunch across the river, then spa',stops:[
+    {id:'s0',t:'10:30',e:'☕',n:'Kapi Café',z:'thao',lat:10.8088,lng:106.7385,addr:'An Khánh, TP. Thủ Đức',m:'Kapi Cafe An Khanh Thao Dien',pri:'must',d:'Riverside deck + real capybaras. Golf-cart entry via a gated area — allow extra minutes.'},
+    {id:'s1',t:'',e:'🍔',n:'Crust Smashburger',z:'thao',lat:10.8032,lng:106.7290,addr:'9 Đỗ Quang, Thảo Điền, TP. Thủ Đức',m:'Crust Smashburger Do Quang',pri:'want',d:'5 min from Kapi.'},
+    {id:'s2',t:'13:00',e:'💆',n:'Pampering — massage / hair / facial',z:'base',d:'Treat-yourself block. Thảo Điền spas, or back near home.'},
+    {id:'s3',t:'18:30',e:'🍜',n:'Cục Gạch Quán',z:'d3',lat:10.7928,lng:106.6890,addr:'10 Đặng Tất, Tân Định, Quận 1',m:'Cuc Gach Quan Dang Tat Tan Dinh',flag:'Book ahead',pri:'want',d:'Michelin-recommended, restored villa. Affordable.'},
+    {id:'s4',t:'20:00',e:'🏮',n:'Ben Thanh Night Market',z:'d1',lat:10.7724,lng:106.6980,addr:'Phan Bội Châu / Lưu Văn Lang, Bến Thành, Quận 1',m:'Ben Thanh Night Market',d:'Shopping + street food. Keep it short — 2am start tomorrow.'}
+  ]},
+  {key:'sun',tab:'Sun',date:'13',iso:'2026-09-13',dot:'base',title:'Mui Ne dunes',sub:'2am–2pm day trip · rest · rooftop dinner',stops:[
+    {id:'u0',t:'02:00',e:'🏜️',n:'Mui Ne sand dunes — day trip',z:'base',lat:10.7648,lng:106.6913,addr:'Pickup below the Airbnb',m:'Mui Ne Sand Dunes',flag:'Booked ✓',pri:'must',d:'Sleep on the bus, sunrise at the white dunes, jeep, fairy stream. Back ~14:00.'},
+    {id:'u1',t:'15:00',e:'🚿',n:'Freshen up / power nap',z:'base',d:'Regroup after the early start.'},
+    {id:'u2',t:'15:30',e:'🛍️',n:'Easy afternoon shop',z:'d1',lat:10.7724,lng:106.6980,addr:'Around Bến Thành / Quận 1',d:'Nothing far — mop up anything missed.'},
+    {id:'u3',t:'17:30',e:'🌆',n:'Chill Skybar & Dining',z:'night',lat:10.7706,lng:106.6944,addr:'Tầng 26–27, AB Tower, 76A Lê Lai, Bến Thành, Quận 1',m:'Chill Skybar AB Tower Le Lai',flag:'Dress code',pri:'want',d:'Panoramic views, DJ, full dinner. Opens 5:30pm. Smart-casual, pricey.'}
+  ]},
+  {key:'mon',tab:'Mon',date:'14',iso:'2026-09-14',dot:'d3',title:'District 3 haul',sub:'Pink church, boutique crawl, buy luggage',stops:[
+    {id:'m0',t:'09:00',e:'📸',n:'Pink Church (Tân Định)',z:'d3',lat:10.7883,lng:106.6907,addr:'289 Hai Bà Trưng, Xuân Hòa, Quận 3',m:'Tan Dinh Church Hai Ba Trung',flag:'Weekday only',pri:'must',d:'Exterior photo spot — shoot from the street or café opposite.'},
+    {id:'m1',t:'09:30',e:'👕',n:'Wardrobe Arc',z:'d3',lat:10.7864,lng:106.6766,addr:'351 Lê Văn Sỹ, Quận 3',m:'Wardrobe Arc Le Van Sy',pri:'must',d:'Your "must go". Opens 9:30 — start here.'},
+    {id:'m2',t:'10:00',e:'👕',n:'11 Garmentory',z:'d3',lat:10.7951,lng:106.6785,addr:'117B Nguyễn Đình Chính, Phú Nhuận',m:'11 Garmentory Nguyen Dinh Chinh',pri:'want',d:'~50 local labels + a café inside.'},
+    {id:'m3',t:'10:30',e:'👕',n:'Bunnyhill Concept',z:'d3',lat:10.7887,lng:106.6781,addr:'25 Trần Quang Diệu, Quận 3',m:'Bunnyhill Concept Tran Quang Dieu',pri:'want',d:'Opens 10:30.'},
+    {id:'m4',t:'11:00',e:'👕',n:'Thriftshop Saigon',z:'d3',lat:10.7702,lng:106.6838,addr:'Nguyễn Đình Chiểu, Bàn Cờ, Quận 3',m:'Thriftshop Saigon Ban Co',pri:'want',d:'Three floors of vintage. Opens 11.'},
+    {id:'m5',t:'',e:'🧳',n:'Buy luggage',z:'d1',lat:10.7718,lng:106.6968,addr:'Saigon Square, 77-89 Nam Kỳ Khởi Nghĩa, Quận 1',m:'Saigon Square Ho Chi Minh',flag:'Do today',pri:'must',d:'So you can pack tomorrow.'},
+    {id:'m6',t:'18:00',e:'🍣',n:'Naked Sushi',z:'d3',lat:10.7889,lng:106.6905,addr:'193A/6 Nam Kỳ Khởi Nghĩa, Xuân Hòa, Quận 3',m:'Naked Sushi Nam Ky Khoi Nghia',flag:'Splurge',pri:'want',d:'The "eat here once" treat, same zone.'}
+  ]},
+  {key:'tue',tab:'Tue',date:'15',iso:'2026-09-15',dot:'base',title:'Departure',sub:'Brunch · pack · fly 15:40',stops:[
+    {id:'t0',t:'morning',e:'🥐',n:'Final brunch + light shop',z:'base',d:'Near home, last-minute souvenirs.'},
+    {id:'t1',t:'',e:'🧳',n:'Pack',z:'base',d:'Make sure the new luggage earns its keep.'},
+    {id:'t2',t:'12:30',e:'🚕',n:'Leave for airport',z:'base',lat:10.8188,lng:106.6520,addr:'Ga quốc tế (T2), Tân Sơn Nhất',m:'Tan Son Nhat International Airport',flag:'TR553 15:40',pri:'must',d:'Grab to the airport for the 15:40 flight.'}
+  ]}
+ ],
+ extras:[
+  {id:'x0',n:'The Box Icon',z:'d1',lat:10.7757,lng:106.6952,addr:'37 Nguyễn Thị Minh Khai, Bến Nghé, Quận 1',m:'The Box Icon Nguyen Thi Minh Khai',d:'Multi-brand concept building — near the Fri route.'},
+  {id:'x1',n:'Hum Signature',z:'d3',lat:10.7788,lng:106.6921,addr:'34 Võ Văn Tấn, Quận 3',m:'Hum Signature Vo Van Tan',d:'Trendy plant-based fine dining (closed Wed).'},
+  {id:'x2',n:'Induslism',z:'base',addr:'Location TBC — send me the area',m:'Induslism coffee Ho Chi Minh City',d:'Café you saved — tell me where and I\u2019ll place it.'}
+ ],
+ photos:[
+  {id:'p0',t:'Pink Church facade (Tân Định)'},
+  {id:'p1',t:'Capybaras @ Kapi Café'},
+  {id:'p2',t:'MonoBooth photo strip'},
+  {id:'p3',t:'Bui Vien neon at night'},
+  {id:'p4',t:'Skyline from Chill Skybar'},
+  {id:'p5',t:'White dunes at sunrise (Mui Ne)'},
+  {id:'p6',t:'The Cafe Apartment building'},
+  {id:'p7',t:'Fit pic in a concept store'}
+ ]
+};
+
+let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null};
+let cur=0,sort='plan',editing=false,addOpen=false;
+
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1600);}
+function hav(a,b){if(!a||!b)return null;const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function km(d){return d==null?'':(d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km');}
+
+async function persist(){
+  const p=JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate});
+  try{await window.storage.set('hcmc26',p);}catch(e){}
+  try{localStorage.setItem('hcmc26',p);}catch(e){}
+}
+async function restore(){
+  let raw=null;
+  try{const r=await window.storage.get('hcmc26');if(r&&r.value)raw=r.value;}catch(e){}
+  if(!raw){try{raw=localStorage.getItem('hcmc26');}catch(e){}}
+  if(raw){try{const o=JSON.parse(raw);Object.assign(state,{data:o.data||state.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});return;}catch(e){}}
+  try{const resp=await fetch('./trip-data.json',{cache:'no-store'});if(resp.ok){const o=await resp.json();if(o.data){Object.assign(state,{data:o.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});}else if(o.days){state.data=o;}}}catch(e){}
+}
+
+function refPoint(){return state.geo||HOME;}
+function sortStops(stops){
+  const arr=stops.map((s,i)=>({s,i}));
+  if(sort==='near'){const rp=refPoint();arr.sort((a,b)=>{const da=a.s.lat?hav(rp,{lat:a.s.lat,lng:a.s.lng}):1e9,db=b.s.lat?hav(rp,{lat:b.s.lat,lng:b.s.lng}):1e9;return da-db||a.i-b.i;});}
+  else if(sort==='pri'){const r={must:0,want:1,maybe:2};arr.sort((a,b)=>{const pa=r[a.s.pri]??3,pb=r[b.s.pri]??3;return pa-pb||a.i-b.i;});}
+  return arr.map(x=>x.s);
+}
+
+const tabsEl=document.getElementById('tabs'),panelsEl=document.getElementById('panels');
+function buildTabs(){
+  tabsEl.innerHTML='';
+  state.data.days.forEach((d,di)=>{
+    const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');
+    b.innerHTML=`<b>${d.tab}</b><small>${d.date} Sep</small><br><span class="dot" style="background:${Z[d.dot]}"></span>`;
+    b.onclick=()=>select(di);tabsEl.appendChild(b);
+  });
+  [['budget','💰','Budget'],['shots','📸','Shots']].forEach(([k,e,l],j)=>{
+    const b=document.createElement('button');b.className='tab';b.dataset.special=k;
+    b.innerHTML=`<b>${e}</b><small>${l}</small><br><span class="dot" style="background:var(--ink)"></span>`;
+    b.onclick=()=>select(state.data.days.length+j);tabsEl.appendChild(b);
+  });
+}
+function select(i){cur=i;editing=false;addOpen=false;render();window.scrollTo({top:0,behavior:'smooth'});}
+
+function render(){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur?'true':'false'));
+  const nDays=state.data.days.length;
+  if(cur<nDays)renderDay(cur);
+  else if(cur===nDays)renderBudget();
+  else renderShots();
+}
+
+function priCls(p){return 'pri '+(p||'none');}
+function renderDay(di){
+  const d=state.data.days[di];
+  const rp=refPoint();
+  const stops=sortStops(d.stops);
+  const total=d.stops.length,dn=d.stops.filter(s=>state.done[s.id]).length;
+  let h=`<div class="toolbar">
+    <div class="seg" role="group">
+      <button aria-pressed="${sort==='plan'}" onclick="setSort('plan')">Plan</button>
+      <button aria-pressed="${sort==='near'}" onclick="setSort('near')">Nearest</button>
+      <button aria-pressed="${sort==='pri'}" onclick="setSort('pri')">Priority</button>
+    </div>
+    <button class="tbtn" onclick="locate()">${state.geo?'📍 Located':'Locate me'}</button>
+    <button class="tbtn" aria-pressed="${editing}" onclick="toggleEdit()">${editing?'Done':'Edit'}</button>
+    <button class="tbtn" onclick="exportData()">Export</button>
+    <button class="tbtn" onclick="document.getElementById('imp').click()">Import</button>
+  </div>
+  <div class="dayhead"><div><h2>${d.title}</h2><div class="sub">${d.sub}</div></div><div class="prog">${dn} / ${total}</div></div>`;
+  if(editing)h+=`<button class="tbtn" style="margin:0 2px 8px" onclick="toggleAdd()">+ Add a place</button>${addForm(di)}`;
+  h+=`<div class="line">`;
+  stops.forEach(s=>{
+    const dHome=s.lat?hav(HOME,{lat:s.lat,lng:s.lng}):null;
+    const dNow=(state.geo&&s.lat)?hav(state.geo,{lat:s.lat,lng:s.lng}):null;
+    const dist=s.lat?`<span class="dist"><b>${km(dHome)}</b> from home${dNow!=null?` · <b>${km(dNow)}</b> now`:''}</span>`:'';
+    const flag=s.flag?`<span class="flag">${s.flag}</span>`:'';
+    const map=s.m?`<a class="lk" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.m+' Ho Chi Minh City')}" target="_blank" rel="noopener">Map</a>`:'';
+    const copy=s.addr?`<button class="lk" onclick="copyAddr(this,'${(s.addr||'').replace(/'/g,"\\'")}')">Copy address</button>`:'';
+    h+=`<div class="stop ${state.done[s.id]?'done':''} ${editing?'editing':''}" data-id="${s.id}" style="--z:${Z[s.z]}">
+      <div class="card">
+        <div class="top">
+          <button class="tick" aria-label="Done" onclick="toggleDone('${s.id}')"></button>
+          <div class="main">
+            <div class="hd" onclick="toggleOpen(this)">
+              <div class="nm"><span class="em">${s.e||'📍'}</span>${s.n}</div>
+              <div class="meta">
+                <span class="chip" style="background:${Z[s.z]}">${ZN[s.z]}</span>
+                ${s.t?`<span class="when">${s.t}</span>`:''}
+                ${flag}${dist}
+              </div>
+            </div>
+            <div class="body">
+              ${s.addr?`<div class="desc" style="margin-bottom:4px">${s.addr}</div>`:''}
+              <div class="desc">${s.d||''}</div>
+              <div class="acts">
+                ${map}${copy}
+                <button class="${priCls(s.pri)}" onclick="cyclePri('${s.id}')">${PRILBL[s.pri||'none']}</button>
+              </div>
+              <textarea class="note" placeholder="Add a comment…" oninput="setNote('${s.id}',this.value)">${s.note||''}</textarea>
+              <div class="editrow">
+                <button class="mini" onclick="move('${s.id}',-1)">↑</button>
+                <button class="mini" onclick="move('${s.id}',1)">↓</button>
+                <button class="mini del" onclick="del('${s.id}')">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+=`</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">`;
+  setPanel(h);
+}
+
+function addForm(di){
+  return `<div class="addform ${addOpen?'on':''}">
+    <input id="a_n" placeholder="Place name">
+    <div class="g">
+      <select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select>
+      <input id="a_t" placeholder="Time (opt)">
+    </div>
+    <input id="a_addr" placeholder="Vietnamese address (opt)">
+    <textarea id="a_note" placeholder="Note (opt)"></textarea>
+    <button class="tbtn" onclick="addPlace(${di})">Add to ${state.data.days[di].tab}</button>
+  </div>`;
+}
+
+function renderBudget(){
+  const totalV=state.spend.reduce((a,e)=>a+(e.cur==='SGD'?e.amt*state.rate:e.amt),0);
+  let rows=state.spend.map((e,i)=>`<div class="row-e"><span>${e.label||'—'}</span><span>${e.cur==='SGD'?'S$'+e.amt:'₫'+Number(e.amt).toLocaleString()} <span class="x" onclick="delExp(${i})">✕</span></span></div>`).join('');
+  const h=`<div class="dayhead"><div><h2>Budget</h2><div class="sub">Log spend as you go</div></div></div>
+  <div class="panelbox">
+    <div class="exp">
+      <input class="lbl" id="e_l" placeholder="What?">
+      <input class="amt" id="e_a" type="number" inputmode="decimal" placeholder="Amount">
+      <select id="e_c" style="border:1px solid var(--line);border-radius:8px;padding:7px 6px;font-size:13px;background:#FCFBF6"><option>VND</option><option>SGD</option></select>
+      <button class="tbtn" onclick="addExp()">Add</button>
+    </div>
+    ${rows||'<div class="muted" style="margin:6px 0 0">Nothing logged yet.</div>'}
+    <div class="total"><span>Total</span><span class="big">₫${Math.round(totalV).toLocaleString()}</span></div>
+    <div class="total" style="font-weight:600"><span></span><span>≈ S$${(totalV/state.rate).toFixed(2)}</span></div>
+    <div class="rate">Rate: 1 SGD ≈ ₫<input id="e_r" type="number" value="${state.rate}" onchange="setRate(this.value)"></div>
+  </div>`;
+  setPanel(h);
+}
+
+function renderShots(){
+  let rows=state.data.photos.map(p=>`<div class="shot ${state.photosDone[p.id]?'done':''}" onclick="togglePhoto('${p.id}')"><span class="b"></span><span class="t">${p.t}</span></div>`).join('');
+  const dn=state.data.photos.filter(p=>state.photosDone[p.id]).length;
+  const h=`<div class="dayhead"><div><h2>Shot list</h2><div class="sub">Content to capture</div></div><div class="prog">${dn} / ${state.data.photos.length}</div></div><div class="panelbox">${rows}</div>`;
+  setPanel(h);
+}
+
+function setPanel(html){panelsEl.innerHTML=`<section class="day on">${html}</section>`;}
+
+// actions
+function setSort(s){sort=s;render();}
+function toggleEdit(){editing=!editing;addOpen=false;render();}
+function toggleAdd(){addOpen=!addOpen;render();}
+function toggleOpen(hd){hd.closest('.stop').classList.toggle('open');}
+function toggleDone(id){state.done[id]=!state.done[id];persist();render();}
+function cyclePri(id){const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();render();}
+function setNote(id,v){const s=findStop(id);if(s){s.note=v;persist();}}
+function move(id,dir){const d=state.data.days[cur];const i=d.stops.findIndex(s=>s.id===id);const j=i+dir;if(i<0||j<0||j>=d.stops.length)return;[d.stops[i],d.stops[j]]=[d.stops[j],d.stops[i]];sort='plan';persist();render();}
+function del(id){const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
+function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Name needed');return;}const stop={id:'u'+Date.now(),n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!stop.addr)delete stop.addr;state.data.days[di].stops.push(stop);addOpen=false;persist();render();toast('Added');}
+function findStop(id){for(const d of state.data.days){const s=d.stops.find(x=>x.id===id);if(s)return s;}return null;}
+
+function copyAddr(btn,txt){const t=txt.replace(/\\'/g,"'");const done=()=>{const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>fallbackCopy(t,done));}else fallbackCopy(t,done);}
+function fallbackCopy(t,cb){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb&&cb();}
+
+function locate(){if(!navigator.geolocation){toast('No GPS available');return;}toast('Locating…');navigator.geolocation.getCurrentPosition(p=>{state.geo={lat:p.coords.latitude,lng:p.coords.longitude};sort='near';render();toast('Located — sorted by nearest');},()=>toast('Location denied'),{enableHighAccuracy:true,timeout:8000});}
+
+function addExp(){const l=document.getElementById('e_l').value.trim();const a=parseFloat(document.getElementById('e_a').value);const c=document.getElementById('e_c').value;if(!a){toast('Amount needed');return;}state.spend.push({label:l,amt:a,cur:c});persist();render();}
+function delExp(i){state.spend.splice(i,1);persist();render();}
+function setRate(v){const n=parseFloat(v);if(n>0){state.rate=n;persist();render();}}
+function togglePhoto(id){state.photosDone[id]=!state.photosDone[id];persist();render();}
+
+function exportData(){const blob=new Blob([JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trip-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Exported trip-data.json');}
+function importData(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.data)state.data=o.data;if(o.spend)state.spend=o.spend;if(o.done)state.done=o.done;if(o.photosDone)state.photosDone=o.photosDone;if(o.rate)state.rate=o.rate;persist();buildTabs();select(0);toast('Imported');}catch(e){toast('Bad file');}};r.readAsText(file);}
+
+function todayIndex(){const iso=new Date().toISOString().slice(0,10);const i=state.data.days.findIndex(d=>d.iso===iso);return i<0?0:i;}
+
+(async function(){await restore();buildTabs();cur=todayIndex();render();})();
+</script>
+</body>
+</html>
