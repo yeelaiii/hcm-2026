@@ -2,229 +2,250 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HCMC '26 — Planner</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F2F2F5">
+<title>HCMC '26</title>
 <style>
   :root{
-    --paper:#F3F4F1; --card:#FFF; --ink:#1B1C1A; --soft:#73756D; --faint:#9B9C93;
-    --line:#E6E7E1; --line2:#EFF0EB;
-    --d1:#E15A3E; --thao:#1C9C8B; --d3:#D85E92; --night:#5A4BD4; --base:#C6971F; --scoot:#F5DE2E;
-    --must:#D8433B; --want:#1C9C8B; --maybe:#9A8F72;
-    --sp:16px;
+    --bg:#F2F2F5; --card:#FFF; --group:#FFFFFF;
+    --label:#1A1A1C; --sec:#6E6E76; --ter:#A0A0A8; --sep:#E6E6EB; --sep2:#EFEFF3;
+    --tint:#2E6FE6; --tintbg:#EAF0FE;
+    --d1:#C25E40; --thao:#2E8B7C; --d3:#C05E86; --night:#5C5AC6; --base:#AE8A38;
+    --must:#D0463E; --want:#2E8B7C; --maybe:#8C8574;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0}
-  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;padding-bottom:60px;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:600px;margin:0 auto;padding:0 15px}
-  button{font-family:inherit}
-  a{color:inherit}
-  ::selection{background:var(--scoot)}
+  body{background:var(--bg);color:var(--label);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;font-size:16px;line-height:1.45;padding-bottom:40px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:600px;margin:0 auto;padding:0 16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit;text-decoration:none}
+  svg{display:block}
 
-  /* ---------------- boarding pass ---------------- */
-  .pass{background:var(--scoot);border-radius:20px;margin:18px 0 12px;padding:18px 20px 16px;color:#161509;position:relative;box-shadow:0 8px 26px rgba(150,128,0,.16)}
-  .pass-top{display:flex;justify-content:space-between;align-items:center}
-  .pass h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;letter-spacing:-.025em;margin:0;line-height:1}
-  .status{font-size:11px;font-weight:700;background:#161509;color:var(--scoot);padding:4px 10px;border-radius:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
-  .pass-sub{font-size:12px;font-weight:500;margin-top:5px;opacity:.72;font-variant-numeric:tabular-nums}
-  .flight{padding:13px 0 3px}
-  .flabel{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.62;margin-bottom:7px}
-  .frow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
-  .ap{min-width:0}
+  /* large title */
+  .title{padding:14px 2px 2px}
+  .title h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:0}
+  .title .meta{color:var(--sec);font-size:13px;margin-top:3px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pill{font-size:11px;font-weight:600;background:var(--tintbg);color:var(--tint);padding:3px 9px;border-radius:20px}
+
+  /* grouped cards */
+  .group{background:var(--group);border-radius:14px;margin:12px 0;overflow:hidden;border:1px solid var(--sep2)}
+  .ghead{font-size:12px;font-weight:600;color:var(--sec);text-transform:none;letter-spacing:0;margin:18px 4px 7px}
+  .row{display:flex;align-items:center;gap:12px;padding:12px 14px;position:relative}
+  .row+.row::before{content:"";position:absolute;left:50px;right:0;top:0;height:1px;background:var(--sep)}
+
+  /* flights */
+  .fl{padding:13px 14px}
+  .fl+.fl{border-top:1px solid var(--sep)}
+  .fl .lab{font-size:11px;font-weight:600;color:var(--ter);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .fl .lab .pl{color:var(--tint)}
+  .frow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+  .ap .code{font-size:20px;font-weight:700;letter-spacing:.01em}
+  .ap .tm{font-size:14px;font-weight:600;color:var(--label);font-variant-numeric:tabular-nums}
+  .ap .tr{font-size:11px;color:var(--ter);margin-top:1px}
   .ap.r{text-align:right}
-  .ap .code{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;line-height:1;letter-spacing:.01em}
-  .ap .tm{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:1px}
-  .ap .term{font-size:10.5px;opacity:.62;margin-top:2px;line-height:1.2}
-  .arc{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 2px}
-  .arc .dur{font-size:9.5px;opacity:.6;font-variant-numeric:tabular-nums}
-  .arc svg{display:block}
-  .arc .rail{width:52px;height:1.5px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 4px,transparent 4px 8px)}
-  .perf{position:relative;height:1px;background:none;margin:11px 0 2px;border-top:1.5px dashed rgba(0,0,0,.28)}
-  .perf::before,.perf::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:var(--paper);top:50%;transform:translateY(-50%)}
-  .perf::before{left:-30px}.perf::after{right:-30px}
+  .mid{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ter)}
+  .mid .dur{font-size:10px;font-variant-numeric:tabular-nums}
+  .mid .rl{width:46px;height:1px;background:var(--sep);position:relative}
+  .mid .rl::after{content:"";position:absolute;right:0;top:-2px;width:4px;height:4px;border-radius:50%;background:var(--ter)}
 
-  /* ---------------- home base bar ---------------- */
-  .homebar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 13px;margin-bottom:10px}
-  .homebar .hl{min-width:0;font-size:13px}
-  .homebar .hl b{font-weight:600}
-  .homebar .hl .co{color:var(--faint);font-size:11.5px;font-variant-numeric:tabular-nums;display:block;margin-top:1px}
-  .homebar .ha{display:flex;gap:7px;flex:0 0 auto}
+  /* home base */
+  .hb .ico{background:var(--tintbg);color:var(--tint)}
+  .hb .t{flex:1;min-width:0}
+  .hb .t .n{font-size:15px;font-weight:600}
+  .hb .t .s{font-size:12px;color:var(--sec);font-variant-numeric:tabular-nums}
+  .hb .a{display:flex;gap:8px}
 
-  .legend{display:flex;flex-wrap:wrap;gap:5px 13px;margin:2px 3px 12px;font-size:11px;color:var(--soft)}
-  .legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+  .btn{border:none;background:var(--tint);color:#fff;font-size:13px;font-weight:600;padding:7px 13px;border-radius:9px}
+  .btn.ghost{background:var(--tintbg);color:var(--tint)}
+  .btn.line{background:#fff;color:var(--label);border:1px solid var(--sep)}
 
-  /* ---------------- tabs ---------------- */
-  .tabs{position:sticky;top:0;z-index:20;background:var(--paper);display:flex;gap:3px;overflow-x:auto;padding:9px 15px;margin:0 -15px;scrollbar-width:none;border-bottom:1px solid var(--line2)}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:0 0 auto;border:none;background:transparent;cursor:pointer;color:var(--soft);padding:5px 13px 7px;border-radius:11px;text-align:center;line-height:1.15;transition:.15s}
-  .tab b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
-  .tab small{font-size:10px;font-variant-numeric:tabular-nums;color:var(--faint)}
-  .tab .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-top:3px}
-  .tab[aria-selected="true"]{background:var(--ink)}
-  .tab[aria-selected="true"] b,.tab[aria-selected="true"] small{color:var(--paper)}
+  /* day selector */
+  .days{position:sticky;top:0;z-index:20;background:var(--bg);display:flex;gap:8px;overflow-x:auto;padding:10px 0;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+  .days::-webkit-scrollbar{display:none}
+  .dchip{flex:0 0 auto;min-width:52px;text-align:center;background:#fff;border:1px solid var(--sep2);border-radius:13px;padding:7px 6px;transition:.15s}
+  .dchip .dow{font-size:11px;color:var(--sec);font-weight:500}
+  .dchip .dnum{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-top:1px}
+  .dchip[aria-selected="true"]{background:var(--label);border-color:var(--label)}
+  .dchip[aria-selected="true"] .dow,.dchip[aria-selected="true"] .dnum{color:#fff}
+  .dchip.today .dnum{color:var(--tint)}
+  .dchip[aria-selected="true"].today .dnum{color:#9DBBF6}
 
-  /* ---------------- toolbar ---------------- */
-  .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:13px 3px 4px}
-  .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
-  .seg button{border:none;background:transparent;padding:6px 11px;font-size:12px;font-weight:600;color:var(--soft);cursor:pointer}
-  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-  .tbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
-  .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  /* day head */
+  .dh{display:flex;justify-content:space-between;align-items:flex-start;margin:14px 4px 4px;gap:10px}
+  .dh h2{font-size:22px;font-weight:700;letter-spacing:-.015em;margin:0}
+  .dh .sub{color:var(--sec);font-size:13px;margin-top:2px}
+  .dh .wx{text-align:right;font-size:12px;color:var(--sec);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .dh .wx .tmp{font-weight:600;color:var(--label)}
+  .dh .wx svg{display:inline-block;vertical-align:-2px;margin-right:3px}
+
+  /* controls */
+  .ctl{display:flex;align-items:center;gap:8px;margin:12px 2px 4px}
+  .seg{display:inline-flex;background:#E9E9EE;border-radius:9px;padding:2px}
+  .seg button{border:none;background:transparent;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--sec);border-radius:7px}
+  .seg button[aria-pressed="true"]{background:#fff;color:var(--label);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .icobtn{border:1px solid var(--sep);background:#fff;border-radius:9px;padding:6px 11px;font-size:12.5px;font-weight:600;color:var(--label)}
+  .icobtn[aria-pressed="true"]{background:var(--label);color:#fff;border-color:var(--label)}
   .spacer{flex:1}
+  .prog{font-size:12.5px;color:var(--sec);font-variant-numeric:tabular-nums;font-weight:600}
 
-  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin:10px 3px 13px}
-  .dayhead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.015em;margin:0}
-  .dayhead .sub{color:var(--soft);font-size:12.5px;margin-top:3px}
-  .prog{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+  /* route */
+  .route{padding:6px}
+  .route svg{width:100%;height:150px;border-radius:10px;background:#FAFAFB}
+  .route .rb{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 4px}
+  .route .rb .lbl{font-size:12px;color:var(--sec)}
 
-  /* ---------------- timeline ---------------- */
-  .day{display:none}.day.on{display:block}
-  .line{position:relative;padding-left:24px}
-  .line::before{content:"";position:absolute;left:6px;top:8px;bottom:12px;width:1.5px;background:var(--line)}
-  .stop{position:relative;margin-bottom:8px}
-  .stop::before{content:"";position:absolute;left:-22.5px;top:17px;width:9px;height:9px;border-radius:50%;background:var(--z);border:2px solid var(--paper);box-shadow:0 0 0 1.5px var(--z)}
-  .card{background:var(--card);border:1px solid var(--line);border-left:2.5px solid var(--z);border-radius:12px;padding:11px 13px;transition:border-color .15s}
-  .top{display:flex;align-items:flex-start;gap:10px}
-  .tick{flex:0 0 auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;margin-top:1px;position:relative;transition:.15s}
-  .tick::after{content:"";position:absolute;inset:3.5px;border-radius:50%;background:var(--z);transform:scale(0);transition:transform .15s}
+  /* stop rows */
+  .ico{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}
   .main{flex:1;min-width:0}
-  .hd{cursor:pointer}
-  .nm{font-weight:600;font-size:14.5px;line-height:1.3;display:flex;align-items:baseline;gap:7px}
-  .nm .em{flex:0 0 auto}
-  .nm .txt{flex:1;min-width:0}
-  .pdot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;margin-top:6px}
-  .meta{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:center;margin-top:4px;font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
-  .meta .sep{color:var(--line);margin:0 -3px}
-  .meta b{color:var(--ink);font-weight:600}
-  .flag{font-size:10px;font-weight:600;color:#8a6a12;border:1px solid #E9D48F;background:#FBF4D9;padding:1px 7px;border-radius:20px}
-  .body{display:none;margin-top:10px;padding-top:2px}
-  .stop.open .body{display:block}
-  .addr{font-size:12.5px;color:var(--ink);opacity:.8;margin-bottom:5px}
-  .desc{font-size:13px;color:var(--soft);line-height:1.5}
-  .acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-  .lk{font-size:12px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;background:#fff;color:var(--ink);transition:.12s}
-  .lk:hover{border-color:var(--z);color:var(--z)}
-  .lk.grab{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-  .pri{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;border:1px solid;cursor:pointer;background:#fff}
+  .nm{font-size:15.5px;font-weight:600;line-height:1.3}
+  .sm{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:2px;font-size:12px;color:var(--sec);font-variant-numeric:tabular-nums}
+  .sm b{color:var(--label);font-weight:600}
+  .sm .dot{width:3px;height:3px;border-radius:50%;background:var(--ter)}
+  .flag{font-size:10.5px;font-weight:600;color:#8a6a12;background:#FBF3D6;padding:1px 7px;border-radius:20px}
+  .nextbadge{font-size:10px;font-weight:700;color:#fff;background:var(--tint);padding:1px 7px;border-radius:20px}
+  .check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.8px solid var(--sep);position:relative;background:none}
+  .check::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--tint);transform:scale(0);transition:.15s}
+  .stoprow.done .check{border-color:var(--tint)}
+  .stoprow.done .check::after{transform:scale(1)}
+  .stoprow.done .nm{color:var(--ter);text-decoration:line-through}
+  .stoprow.next{background:var(--tintbg)}
+  .stoprow{cursor:pointer}
+  .body{display:none;padding:0 14px 13px 60px}
+  .stoprow.open+.body{display:block}
+  .addr{font-size:13px;color:var(--label);opacity:.85}
+  .desc{font-size:13.5px;color:var(--sec);margin-top:4px;line-height:1.5}
+  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .lk{font-size:12.5px;font-weight:600;border:1px solid var(--sep);border-radius:8px;padding:6px 12px;background:#fff;color:var(--label)}
+  .lk.grab{background:var(--label);color:#fff;border-color:var(--label)}
+  .pri{font-size:12px;font-weight:600;padding:5px 11px;border-radius:8px;border:1px solid;background:#fff}
   .pri.must{color:var(--must);border-color:var(--must)}
   .pri.want{color:var(--want);border-color:var(--want)}
   .pri.maybe{color:var(--maybe);border-color:var(--maybe)}
-  .pri.none{color:var(--soft);border-color:var(--line)}
-  .note{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13px;resize:vertical;min-height:38px;background:#FBFBF9;color:var(--ink)}
-  .note::placeholder{color:var(--faint)}
-  .note:focus{outline:none;border-color:var(--z)}
-  .editrow{display:none;gap:6px;margin-top:9px}
-  .stop.editing .editrow{display:flex}
-  .mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .pri.none{color:var(--sec);border-color:var(--sep)}
+  .note{width:100%;margin-top:11px;border:1px solid var(--sep);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13.5px;resize:vertical;min-height:38px;background:#FBFBFC;color:var(--label)}
+  .note:focus{outline:none;border-color:var(--tint)}
+  .editrow{display:none;gap:7px;margin-top:10px}
+  .stoprow.open.ed+.body .editrow{display:flex}
+  .mini{border:1px solid var(--sep);background:#fff;border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--label)}
   .mini.del{color:var(--must);border-color:#E6C8C5}
-  .stop.done .card{opacity:.48}.stop.done .nm .txt{text-decoration:line-through}
-  .stop.done .tick{border-color:var(--z)}.stop.done .tick::after{transform:scale(1)}
 
-  .addform{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:13px;margin:2px 0 10px;display:none}
-  .addform.on{display:block}
-  .addform input,.addform select,.addform textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:13px;margin-bottom:8px;background:#FBFBF9;color:var(--ink)}
+  .addform{padding:13px}
+  .addform input,.addform select,.addform textarea{width:100%;border:1px solid var(--sep);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:14px;margin-bottom:8px;background:#FBFBFC;color:var(--label)}
   .addform .g{display:flex;gap:8px}.addform .g>*{flex:1}
 
-  .panelbox{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:10px}
-  .panelbox .muted{color:var(--soft);font-size:12.5px;margin:6px 0 0}
-  .exp{display:flex;gap:7px;align-items:center;margin-bottom:10px}
-  .exp input,.exp select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;background:#FBFBF9;color:var(--ink)}
-  .exp .lbl{flex:1;min-width:0}.exp .amt{width:92px}
-  .row-e{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13.5px}
-  .row-e .x{color:var(--must);cursor:pointer;font-weight:700;padding:0 4px}
-  .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}
-  .total .big{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:700}
-  .rate{font-size:11.5px;color:var(--soft);margin-top:8px;display:flex;align-items:center;gap:6px}
-  .rate input{width:82px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:inherit;font-size:12px;font-variant-numeric:tabular-nums;background:#FBFBF9}
-  .shot{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}
-  .shot:last-child{border-bottom:none}
-  .shot .b{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:0 0 auto;position:relative}
-  .shot.done .b{background:var(--d3);border-color:var(--d3)}
-  .shot.done .b::after{content:"✓";color:#fff;font-size:12px;position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-  .shot.done .t{text-decoration:line-through;color:var(--soft)}
+  .exp{display:flex;gap:8px;align-items:center;padding:12px 14px}
+  .exp input,.exp select{border:1px solid var(--sep);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:14px;background:#FBFBFC;color:var(--label)}
+  .exp .lbl{flex:1;min-width:0}.exp .amt{width:96px}
+  .erow{display:flex;justify-content:space-between;padding:12px 14px;font-size:14.5px}
+  .erow .x{color:var(--must);font-weight:700;padding:0 4px}
+  .total{display:flex;justify-content:space-between;align-items:baseline;padding:14px}
+  .total .big{font-size:24px;font-weight:700}
+  .rate{font-size:12.5px;color:var(--sec);padding:0 14px 14px;display:flex;align-items:center;gap:6px}
+  .rate input{width:84px;border:1px solid var(--sep);border-radius:8px;padding:6px 9px;font-family:inherit;font-size:13px;font-variant-numeric:tabular-nums;background:#FBFBFC}
+  .shot{display:flex;align-items:center;gap:12px;padding:13px 14px}
+  .shot+.shot::before{content:"";position:absolute}
+  .shot{position:relative}
+  .shot+.shot{border-top:1px solid var(--sep)}
+  .shot .b{width:22px;height:22px;border-radius:7px;border:1.8px solid var(--sep);flex:0 0 auto;position:relative}
+  .shot.done .b{background:var(--tint);border-color:var(--tint)}
+  .shot.done .b::after{content:"";position:absolute;left:7px;top:3px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .shot.done .t{text-decoration:line-through;color:var(--sec)}
+  .muted{color:var(--sec);font-size:13px;padding:14px}
 
-  details.pub{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin:14px 0}
-  details.pub summary{font-weight:600;cursor:pointer;font-size:13.5px}
-  details.pub ol{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--soft);line-height:1.7}
-  details.pub code{background:#F0F1EC;padding:1px 5px;border-radius:5px;font-size:12px}
-  footer{text-align:center;color:var(--faint);font-size:11px;padding:18px 0 8px}
-  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:22px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.22s;z-index:50}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  details.pub{background:#fff;border:1px solid var(--sep2);border-radius:13px;padding:13px 15px;margin:14px 0}
+  details.pub summary{font-weight:600;font-size:14px}
+  details.pub ol{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--sec);line-height:1.7}
+  details.pub code{background:#EFEFF3;padding:1px 5px;border-radius:5px;font-size:12px}
+  footer{text-align:center;color:var(--ter);font-size:11.5px;padding:16px 0 8px}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);background:#111;color:#fff;padding:10px 18px;border-radius:22px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:.22s;z-index:50}
+  .toast.on{opacity:.95;transform:translateX(-50%) translateY(0)}
   @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="pass" id="pass">
-    <div class="pass-top">
-      <h1>HCMC '26</h1>
-      <span class="status" id="status">—</span>
-    </div>
-    <div class="pass-sub">Elijah + Ashley · Scoot · LHCL3R</div>
+  <div class="title">
+    <h1>HCMC '26</h1>
+    <div class="meta">Elijah &amp; Ashley · Scoot LHCL3R <span class="pill" id="status">—</span></div>
+  </div>
 
-    <div class="flight">
-      <div class="flabel">Outbound · TR552 · Thu 10 Sep</div>
+  <div class="ghead">Flights</div>
+  <div class="group">
+    <div class="fl">
+      <div class="lab"><span class="pl" id="ic_pl1"></span> Outbound · TR552 · Thu 10 Sep</div>
       <div class="frow">
-        <div class="ap"><div class="code">SIN</div><div class="tm">13:25</div><div class="term">Changi T1</div></div>
-        <div class="arc"><span class="dur">2h 15m</span><span class="rail"></span></div>
-        <div class="ap r"><div class="code">SGN</div><div class="tm">14:40</div><div class="term">Tân Sơn Nhất T2</div></div>
+        <div class="ap"><div class="code">SIN</div><div class="tm">13:25</div><div class="tr">Changi T1</div></div>
+        <div class="mid"><span class="dur">2h 15m</span><span class="rl"></span></div>
+        <div class="ap r"><div class="code">SGN</div><div class="tm">14:40</div><div class="tr">Tân Sơn Nhất T2</div></div>
       </div>
     </div>
-    <div class="perf"></div>
-    <div class="flight">
-      <div class="flabel">Return · TR553 · Tue 15 Sep</div>
+    <div class="fl">
+      <div class="lab"><span class="pl" id="ic_pl2"></span> Return · TR553 · Tue 15 Sep</div>
       <div class="frow">
-        <div class="ap"><div class="code">SGN</div><div class="tm">15:40</div><div class="term">Tân Sơn Nhất T2</div></div>
-        <div class="arc"><span class="dur">2h 05m</span><span class="rail"></span></div>
-        <div class="ap r"><div class="code">SIN</div><div class="tm">18:45</div><div class="term">Changi T1</div></div>
+        <div class="ap"><div class="code">SGN</div><div class="tm">15:40</div><div class="tr">Tân Sơn Nhất T2</div></div>
+        <div class="mid"><span class="dur">2h 05m</span><span class="rl"></span></div>
+        <div class="ap r"><div class="code">SIN</div><div class="tm">18:45</div><div class="tr">Changi T1</div></div>
       </div>
     </div>
   </div>
 
-  <div class="homebar">
-    <div class="hl"><b>🏠 Home base</b> · Bùi Viện, Q1<span class="co">10.7648, 106.6913</span></div>
-    <div class="ha">
-      <button class="lk grab" onclick="copyText(this,'10.764750, 106.691250')">Copy for Grab</button>
-      <a class="lk" href="https://www.google.com/maps/search/?api=1&query=10.764750,106.691250" target="_blank" rel="noopener">Map</a>
+  <div class="group">
+    <div class="row hb">
+      <div class="ico" id="ic_home"></div>
+      <div class="t"><div class="n">Home base</div><div class="s">Bùi Viện, Q1 · 10.7648, 106.6913</div></div>
+      <div class="a">
+        <button class="btn" onclick="copyText(this,'10.764750, 106.691250')">Copy</button>
+        <a class="btn line" href="https://www.google.com/maps/search/?api=1&query=10.764750,106.691250" target="_blank" rel="noopener">Map</a>
+      </div>
     </div>
   </div>
 
-  <div class="legend">
-    <span><i style="background:var(--d1)"></i>District 1</span>
-    <span><i style="background:var(--thao)"></i>Thảo Điền</span>
-    <span><i style="background:var(--d3)"></i>D3 / Tân Định</span>
-    <span><i style="background:var(--night)"></i>Nights</span>
-    <span><i style="background:var(--base)"></i>Base / day trip</span>
-  </div>
-
-  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="days" id="days" role="tablist"></div>
   <div id="panels"></div>
 
   <details class="pub">
-    <summary>Publish to GitHub + export your edits</summary>
+    <summary>Publish &amp; export</summary>
     <ol>
-      <li>Repo (e.g. <code>hcm-2026</code>) → upload this file as <code>index.html</code>.</li>
-      <li>Settings → Pages → deploy from <code>main</code> / root.</li>
-      <li>Edited here? Tap <b>Export</b>, commit <code>trip-data.json</code> beside <code>index.html</code> — every device (incl. Ashley's) loads your latest plan.</li>
+      <li>Upload just <code>index.html</code> to your repo (replace the old one).</li>
+      <li>Settings → Pages → deploy from <code>main</code> / root, then hard-refresh.</li>
+      <li>Edited here? Tap <b>Export</b> and commit <code>trip-data.json</code> beside <code>index.html</code>.</li>
     </ol>
   </details>
-  <footer>Edits save on this phone · Export to make them permanent + shared</footer>
+  <footer>Saves on this device · Export to sync across phones</footer>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const HOME={lat:10.76475,lng:106.69125};
-const Z={d1:'var(--d1)',thao:'var(--thao)',d3:'var(--d3)',night:'var(--night)',base:'var(--base)'};
-const ZN={d1:'District 1',thao:'Thảo Điền',d3:'D3 / Tân Định',night:'Night',base:'Base'};
+const ZC={d1:'#C25E40',thao:'#2E8B7C',d3:'#C05E86',night:'#5C5AC6',base:'#AE8A38'};
 const PRIS=['none','must','want','maybe'];
 const PRILBL={none:'Set priority',must:'Must',want:'Want',maybe:'Maybe'};
 
-const DEFAULT={
- rate:19000,
- days:[
+/* ---- line icons ---- */
+const P={
+ plane:'M2 12l19-7-4 9 4 9-19-7 6-2z',
+ food:'M4 3v18M4 9c3 0 3-6 0-6M8 3v6a2 2 0 0 1-4 0M17 3c-2 0-3 3-3 6h3v9',
+ cafe:'M4 8h12v4a5 5 0 0 1-10 0zM16 9h2a2 2 0 0 1 0 4h-2M5 3v1M9 3v1M13 3v1M4 20h14',
+ shop:'M4 8h16l-1 12H5zM8 8V6a4 4 0 0 1 8 0v2',
+ photo:'M4 8h3l1.5-2h7L18 8h2v11H4zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+ spa:'M12 3c3 4 3 7 0 10-3-3-3-6 0-10zM5 12c4 0 6 2 7 6-4 0-6-2-7-6zM19 12c-4 0-6 2-7 6 4 0 6-2 7-6z',
+ night:'M20 14a8 8 0 1 1-9-11 6 6 0 0 0 9 11z',
+ sight:'M4 21h16M5 21V10l7-5 7 5v11M9 21v-6h6v6',
+ transit:'M4 13l2-6h12l2 6v6h-3v-2H7v2H4zM7 16h.01M17 16h.01',
+ luggage:'M6 8h12v12H6zM9 8V5h6v3M9 20v1M15 20v1',
+ dunes:'M12 4v2M5 8l1 1M18 9l1-1M4 15h16M4 19h16M12 8a4 4 0 0 0 0 8',
+ pin:'M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+ wxsun:'M12 4v2M12 18v2M4 12h2M18 12h2M6 6l1 1M17 17l1 1M6 18l1-1M17 7l1-1M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
+ wxcloud:'M7 18h10a4 4 0 0 0 0-8 5 5 0 0 0-9.6-1A3.5 3.5 0 0 0 7 18z',
+ wxrain:'M7 15h9a4 4 0 0 0 0-8 5 5 0 0 0-9.5-1A3.3 3.3 0 0 0 7 15zM8 18l-1 2M12 18l-1 2M16 18l-1 2',
+ wxstorm:'M7 14h9a4 4 0 0 0 0-8 5 5 0 0 0-9.5-1A3.3 3.3 0 0 0 7 14zM12 15l-2 4h3l-2 4'
+};
+function svg(name,size,stroke){return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="'+(stroke||'currentColor')+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="'+P[name]+'"/></svg>';}
+const EI={'🛬':'plane','🍕':'food','🍔':'food','🍜':'food','🍣':'food','🥖':'food','🍢':'food','🥐':'food','💆':'spa','📮':'sight','💅':'spa','🏢':'cafe','🛍️':'shop','👕':'shop','🧋':'cafe','☕':'cafe','📸':'photo','🍸':'night','🍺':'night','🕺':'night','🌆':'night','🏮':'shop','🏜️':'dunes','🚿':'spa','🧳':'luggage','🚕':'transit','📍':'pin'};
+function iconFor(s){return EI[s.e]||'pin';}
+
+const DEFAULT={rate:19000,days:[
   {key:'thu',tab:'Thu',date:'10',iso:'2026-09-10',dot:'base',title:'Arrival',sub:'Land 14:40 · settle in · easy night',stops:[
     {id:'d0',t:'16:30',e:'🛬',n:'Airbnb check-in',z:'base',lat:10.76475,lng:106.69125,addr:'10.764750, 106.691250',grab:'10.764750, 106.691250',d:'Bùi Viện / Phạm Ngũ Lão, Quận 1. Drop bags, settle by 17:00.'},
     {id:'d1',t:'17:30',e:'🍕',n:'Pizza 4P\u2019s Le Thanh Ton',z:'d1',lat:10.7802,lng:106.7030,addr:'8 Lê Thánh Tôn, Bến Nghé, Quận 1',m:'Pizza 4Ps Le Thanh Ton',flag:'Book ahead',pri:'must',d:'Your must-visit first meal.'},
@@ -276,195 +297,171 @@ const DEFAULT={
     {id:'t2',t:'12:30',e:'🚕',n:'Leave for airport',z:'base',lat:10.8188,lng:106.6520,addr:'Ga quốc tế (T2), Tân Sơn Nhất',m:'Tan Son Nhat International Airport',flag:'TR553 · 15:40',pri:'must',d:'Grab to the airport for the 15:40 return flight.'}
   ]}
  ],
- extras:[
-  {id:'x0',n:'The Box Icon',z:'d1',lat:10.7757,lng:106.6952,addr:'37 Nguyễn Thị Minh Khai, Bến Nghé, Quận 1',m:'The Box Icon Nguyen Thi Minh Khai',d:'Multi-brand concept building — near the Fri route.'},
-  {id:'x1',n:'Hum Signature',z:'d3',lat:10.7788,lng:106.6921,addr:'34 Võ Văn Tấn, Quận 3',m:'Hum Signature Vo Van Tan',d:'Trendy plant-based fine dining (closed Wed).'},
-  {id:'x2',n:'Induslism',z:'base',addr:'Location TBC — send me the area',m:'Induslism coffee Ho Chi Minh City',d:'Café you saved — tell me where and I\u2019ll place it.'}
- ],
  photos:[
-  {id:'p0',t:'Pink Church facade (Tân Định)'},
-  {id:'p1',t:'Capybaras @ Kapi Café'},
-  {id:'p2',t:'MonoBooth photo strip'},
-  {id:'p3',t:'Bui Vien neon at night'},
-  {id:'p4',t:'Skyline from Chill Skybar'},
-  {id:'p5',t:'White dunes at sunrise (Mui Ne)'},
-  {id:'p6',t:'The Cafe Apartment building'},
-  {id:'p7',t:'Fit pic in a concept store'}
+  {id:'p0',t:'Pink Church facade (Tân Định)'},{id:'p1',t:'Capybaras at Kapi Café'},{id:'p2',t:'MonoBooth photo strip'},{id:'p3',t:'Bui Vien at night'},{id:'p4',t:'Skyline from Chill Skybar'},{id:'p5',t:'White dunes at sunrise'},{id:'p6',t:'The Cafe Apartment building'},{id:'p7',t:'Fit pic in a concept store'}
  ]
 };
 
-let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null};
+let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{}};
 let cur=0,sort='plan',editing=false,addOpen=false;
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1600);}
 function hav(a,b){if(!a||!b)return null;const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function km(d){return d==null?'':(d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km');}
+function esc(s){return (s||'').replace(/'/g,"\\'");}
+function tmin(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;}
 
 function setStatus(){
   const el=document.getElementById('status');
-  const start=new Date('2026-09-10T00:00:00'),end=new Date('2026-09-15T23:59:59');
-  const now=new Date();const oneDay=864e5;
-  if(now<start){const days=Math.ceil((start-now)/oneDay);el.textContent=days+' day'+(days===1?'':'s')+' to go';}
-  else if(now>end){el.textContent='Trip complete';}
-  else{const d=Math.floor((now-start)/oneDay)+1;el.textContent='Day '+d+' of 6';}
+  const start=new Date('2026-09-10T00:00:00'),end=new Date('2026-09-15T23:59:59'),now=new Date(),D=864e5;
+  if(now<start){const d=Math.ceil((start-now)/D);el.textContent=d+' day'+(d===1?'':'s')+' to go';}
+  else if(now>end)el.textContent='Trip complete';
+  else el.textContent='Day '+(Math.floor((now-start)/D)+1)+' of 6';
 }
+function isToday(iso){return new Date().toISOString().slice(0,10)===iso;}
 
-async function persist(){
-  const p=JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate});
-  try{await window.storage.set('hcmc26',p);}catch(e){}
-  try{localStorage.setItem('hcmc26',p);}catch(e){}
+async function persist(){const p=JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate});try{await window.storage.set('hcmc26',p);}catch(e){}try{localStorage.setItem('hcmc26',p);}catch(e){}}
+async function restore(){let raw=null;try{const r=await window.storage.get('hcmc26');if(r&&r.value)raw=r.value;}catch(e){}if(!raw){try{raw=localStorage.getItem('hcmc26');}catch(e){}}if(raw){try{const o=JSON.parse(raw);Object.assign(state,{data:o.data||state.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});return;}catch(e){}}try{const resp=await fetch('./trip-data.json',{cache:'no-store'});if(resp.ok){const o=await resp.json();if(o.data)Object.assign(state,{data:o.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});else if(o.days)state.data=o;}}catch(e){}}
+
+async function loadWx(){
+  try{const c=localStorage.getItem('hcmc26wx');if(c){const o=JSON.parse(c);if(o.day===new Date().toISOString().slice(0,10)){state.wx=o.wx;return;}}}catch(e){}
+  try{
+    const u='https://api.open-meteo.com/v1/forecast?latitude=10.79&longitude=106.70&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=Asia/Bangkok&start_date=2026-09-10&end_date=2026-09-15';
+    const r=await fetch(u);if(!r.ok)return;const j=await r.json();const d=j.daily;if(!d)return;
+    const wx={};d.time.forEach((t,i)=>{wx[t]={mx:Math.round(d.temperature_2m_max[i]),mn:Math.round(d.temperature_2m_min[i]),rn:d.precipitation_probability_max[i],c:d.weather_code[i]};});
+    state.wx=wx;try{localStorage.setItem('hcmc26wx',JSON.stringify({day:new Date().toISOString().slice(0,10),wx}));}catch(e){}
+  }catch(e){}
 }
-async function restore(){
-  let raw=null;
-  try{const r=await window.storage.get('hcmc26');if(r&&r.value)raw=r.value;}catch(e){}
-  if(!raw){try{raw=localStorage.getItem('hcmc26');}catch(e){}}
-  if(raw){try{const o=JSON.parse(raw);Object.assign(state,{data:o.data||state.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});return;}catch(e){}}
-  try{const resp=await fetch('./trip-data.json',{cache:'no-store'});if(resp.ok){const o=await resp.json();if(o.data){Object.assign(state,{data:o.data,spend:o.spend||[],done:o.done||{},photosDone:o.photosDone||{},rate:o.rate||state.rate});}else if(o.days){state.data=o;}}}catch(e){}
-}
+function wxIcon(c){if(c===0)return 'wxsun';if(c<=48)return 'wxcloud';if(c>=95)return 'wxstorm';if(c>=51)return 'wxrain';return 'wxcloud';}
+function wxHTML(iso){const w=state.wx[iso];if(!w)return '';return svg(wxIcon(w.c),15,'#6E6E76')+'<span class="tmp">'+w.mx+'°</span> / '+w.mn+'°'+(w.rn!=null?' · '+w.rn+'%':'');}
 
 function refPoint(){return state.geo||HOME;}
-function sortStops(stops){
-  const arr=stops.map((s,i)=>({s,i}));
-  if(sort==='near'){const rp=refPoint();arr.sort((a,b)=>{const da=a.s.lat?hav(rp,{lat:a.s.lat,lng:a.s.lng}):1e9,db=b.s.lat?hav(rp,{lat:b.s.lat,lng:b.s.lng}):1e9;return da-db||a.i-b.i;});}
-  else if(sort==='pri'){const r={must:0,want:1,maybe:2};arr.sort((a,b)=>{const pa=r[a.s.pri]??3,pb=r[b.s.pri]??3;return pa-pb||a.i-b.i;});}
-  return arr.map(x=>x.s);
-}
+function sortStops(stops){const arr=stops.map((s,i)=>({s,i}));if(sort==='near'){const rp=refPoint();arr.sort((a,b)=>{const da=a.s.lat?hav(rp,{lat:a.s.lat,lng:a.s.lng}):1e9,db=b.s.lat?hav(rp,{lat:b.s.lat,lng:b.s.lng}):1e9;return da-db||a.i-b.i;});}else if(sort==='pri'){const r={must:0,want:1,maybe:2};arr.sort((a,b)=>{const pa=r[a.s.pri]??3,pb=r[b.s.pri]??3;return pa-pb||a.i-b.i;});}return arr.map(x=>x.s);}
 
-const tabsEl=document.getElementById('tabs'),panelsEl=document.getElementById('panels');
-function buildTabs(){
-  tabsEl.innerHTML='';
+function nextStopId(d){if(!isToday(d.iso))return null;const now=new Date();const nm=now.getHours()*60+now.getMinutes();let best=null,bt=1e9;d.stops.forEach(s=>{const t=tmin(s.t);if(t!=null&&t>=nm&&!state.done[s.id]&&t<bt){bt=t;best=s.id;}});return best;}
+
+const daysEl=document.getElementById('days'),panelsEl=document.getElementById('panels');
+function buildDays(){
+  daysEl.innerHTML='';
   state.data.days.forEach((d,di)=>{
-    const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');
-    b.innerHTML='<b>'+d.tab+'</b><small>'+d.date+' Sep</small><br><span class="dot" style="background:'+Z[d.dot]+'"></span>';
-    b.onclick=()=>select(di);tabsEl.appendChild(b);
+    const b=document.createElement('button');b.className='dchip'+(isToday(d.iso)?' today':'');b.setAttribute('role','tab');
+    b.innerHTML='<div class="dow">'+d.tab+'</div><div class="dnum">'+d.date+'</div>';
+    b.onclick=()=>select(di);daysEl.appendChild(b);
   });
-  [['💰','Budget'],['📸','Shots']].forEach(([e,l],j)=>{
-    const b=document.createElement('button');b.className='tab';
-    b.innerHTML='<b>'+e+'</b><small>'+l+'</small><br><span class="dot" style="background:var(--ink)"></span>';
-    b.onclick=()=>select(state.data.days.length+j);tabsEl.appendChild(b);
+  [['Budget'],['Shots']].forEach(([l],j)=>{
+    const b=document.createElement('button');b.className='dchip';
+    b.innerHTML='<div class="dow">·</div><div class="dnum" style="font-size:12px;padding:4px 0">'+l+'</div>';
+    b.onclick=()=>select(state.data.days.length+j);daysEl.appendChild(b);
   });
 }
 function select(i){cur=i;editing=false;addOpen=false;render();window.scrollTo({top:0,behavior:'smooth'});}
+function render(){document.querySelectorAll('.dchip').forEach((t,i)=>t.setAttribute('aria-selected',i===cur?'true':'false'));const n=state.data.days.length;if(cur<n)renderDay(cur);else if(cur===n)renderBudget();else renderShots();}
 
-function render(){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.setAttribute('aria-selected',i===cur?'true':'false'));
-  const nDays=state.data.days.length;
-  if(cur<nDays)renderDay(cur);
-  else if(cur===nDays)renderBudget();
-  else renderShots();
+function routeMap(stops){
+  const pts=stops.filter(s=>s.lat);if(pts.length<2)return '';
+  const W=560,H=150,pad=22;
+  const las=pts.map(p=>p.lat),lns=pts.map(p=>p.lng);
+  let laMin=Math.min(...las),laMax=Math.max(...las),lnMin=Math.min(...lns),lnMax=Math.max(...lns);
+  const spanLa=(laMax-laMin)||1e-4,spanLn=(lnMax-lnMin)||1e-4;
+  const X=p=>pad+((p.lng-lnMin)/spanLn)*(W-2*pad);
+  const Y=p=>H-pad-((p.lat-laMin)/spanLa)*(H-2*pad);
+  let poly=pts.map(p=>X(p).toFixed(0)+','+Y(p).toFixed(0)).join(' ');
+  let dots=pts.map((p,i)=>'<circle cx="'+X(p).toFixed(0)+'" cy="'+Y(p).toFixed(0)+'" r="9" fill="'+ZC[p.z]+'"/><text x="'+X(p).toFixed(0)+'" y="'+(Y(p)+3.5).toFixed(0)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">'+(i+1)+'</text>').join('');
+  const dir='https://www.google.com/maps/dir/?api=1&origin='+HOME.lat+','+HOME.lng+'&destination='+pts[pts.length-1].lat+','+pts[pts.length-1].lng+'&waypoints='+pts.slice(0,-1).map(p=>p.lat+','+p.lng).join('|')+'&travelmode=driving';
+  return '<div class="group route"><div class="rb"><span class="lbl">Route · '+pts.length+' stops</span><a class="lk" href="'+dir+'" target="_blank" rel="noopener">Directions in Maps</a></div>'
+    +'<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet"><polyline points="'+poly+'" fill="none" stroke="#C9C9D2" stroke-width="2" stroke-dasharray="4 4"/>'+dots+'</svg></div>';
 }
 
-function priCls(p){return 'pri '+(p||'none');}
-function esc(s){return (s||'').replace(/'/g,"\\'");}
 function renderDay(di){
-  const d=state.data.days[di];
-  const stops=sortStops(d.stops);
+  const d=state.data.days[di];const stops=sortStops(d.stops);
   const total=d.stops.length,dn=d.stops.filter(s=>state.done[s.id]).length;
-  let h='<div class="toolbar">'
-    +'<div class="seg" role="group">'
+  const nextId=nextStopId(d);
+  let h='<div class="dh"><div><h2>'+d.title+'</h2><div class="sub">'+d.sub+'</div></div><div class="wx">'+wxHTML(d.iso)+'</div></div>';
+  h+='<div class="ctl"><div class="seg" role="group">'
     +'<button aria-pressed="'+(sort==='plan')+'" onclick="setSort(\'plan\')">Plan</button>'
     +'<button aria-pressed="'+(sort==='near')+'" onclick="setSort(\'near\')">Nearest</button>'
-    +'<button aria-pressed="'+(sort==='pri')+'" onclick="setSort(\'pri\')">Priority</button>'
-    +'</div>'
-    +'<button class="tbtn" onclick="locate()">'+(state.geo?'📍 Located':'Locate me')+'</button>'
-    +'<span class="spacer"></span>'
-    +'<button class="tbtn" aria-pressed="'+editing+'" onclick="toggleEdit()">'+(editing?'Done':'Edit')+'</button>'
-    +'<button class="tbtn" onclick="exportData()">Export</button>'
-    +'<button class="tbtn" onclick="document.getElementById(\'imp\').click()">Import</button>'
-    +'</div>'
-    +'<div class="dayhead"><div><h2>'+d.title+'</h2><div class="sub">'+d.sub+'</div></div><div class="prog">'+dn+' / '+total+' done</div></div>';
-  if(editing)h+='<button class="tbtn" style="margin:0 3px 9px" onclick="toggleAdd()">+ Add a place</button>'+addForm(di);
-  h+='<div class="line">';
+    +'<button aria-pressed="'+(sort==='pri')+'" onclick="setSort(\'pri\')">Priority</button></div>'
+    +'<button class="icobtn" onclick="locate()">'+(state.geo?'Located':'Locate')+'</button>'
+    +'<span class="spacer"></span><span class="prog">'+dn+'/'+total+'</span>'
+    +'<button class="icobtn" aria-pressed="'+editing+'" onclick="toggleEdit()">'+(editing?'Done':'Edit')+'</button></div>';
+  if(editing)h+='<div class="ctl"><button class="icobtn" onclick="toggleAdd()">+ Add place</button><button class="icobtn" onclick="exportData()">Export</button><button class="icobtn" onclick="document.getElementById(\'imp\').click()">Import</button></div>'+(addOpen?'<div class="group"><div class="addform">'+addFields(di)+'</div></div>':'');
+  h+=routeMap(stops);
+  h+='<div class="group">';
   stops.forEach(s=>{
     const dHome=s.lat?hav(HOME,{lat:s.lat,lng:s.lng}):null;
     const dNow=(state.geo&&s.lat)?hav(state.geo,{lat:s.lat,lng:s.lng}):null;
     const bits=[];
+    if(s.id===nextId)bits.push('<span class="nextbadge">Next</span>');
     if(s.t)bits.push('<span>'+s.t+'</span>');
-    if(dHome!=null)bits.push('<span><b>'+km(dHome)+'</b> from home'+(dNow!=null?' · <b>'+km(dNow)+'</b> now':'')+'</span>');
+    if(dHome!=null)bits.push('<span><b>'+km(dHome)+'</b>'+(dNow!=null?' · <b>'+km(dNow)+'</b> now':' from home')+'</span>');
     if(s.flag)bits.push('<span class="flag">'+s.flag+'</span>');
-    const meta=bits.length?'<div class="meta">'+bits.join('<span class="sep">·</span>')+'</div>':'';
-    const pdot=(s.pri&&s.pri!=='none')?'<span class="pdot" style="background:var(--'+s.pri+')"></span>':'';
+    const sm=bits.length?'<div class="sm">'+bits.map((b,i)=>b+(i<bits.length-1&&!/badge|flag/.test(b)?'':'')).join('<span class="dot"></span>')+'</div>':'';
+    const zc=ZC[s.z];
     const map=s.m?'<a class="lk" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.m+' Ho Chi Minh City')+'" target="_blank" rel="noopener">Map</a>':'';
     const grabTxt=s.grab||s.addr;
     const copy=grabTxt?'<button class="lk grab" onclick="copyText(this,\''+esc(grabTxt)+'\')">Copy for Grab</button>':'';
-    h+='<div class="stop '+(state.done[s.id]?'done':'')+' '+(editing?'editing':'')+'" data-id="'+s.id+'" style="--z:'+Z[s.z]+'">'
-      +'<div class="card"><div class="top">'
-      +'<button class="tick" aria-label="Done" onclick="toggleDone(\''+s.id+'\')"></button>'
-      +'<div class="main">'
-      +'<div class="hd" onclick="toggleOpen(this)"><div class="nm"><span class="em">'+(s.e||'📍')+'</span><span class="txt">'+s.n+'</span>'+pdot+'</div>'+meta+'</div>'
+    h+='<div class="stoprow '+(state.done[s.id]?'done':'')+(s.id===nextId?' next':'')+(editing?' ed':'')+'" onclick="rowTap(event,this)" data-id="'+s.id+'">'
+      +'<div class="ico" style="background:'+zc+'1F;color:'+zc+'">'+svg(iconFor(s),18,zc)+'</div>'
+      +'<div class="main"><div class="nm">'+s.n+'</div>'+sm+'</div>'
+      +'<button class="check" aria-label="Done" onclick="toggleDone(event,\''+s.id+'\')"></button></div>'
       +'<div class="body">'
       +(s.addr?'<div class="addr">'+s.addr+'</div>':'')
       +'<div class="desc">'+(s.d||'')+'</div>'
-      +'<div class="acts">'+map+copy+'<button class="'+priCls(s.pri)+'" onclick="cyclePri(\''+s.id+'\')">'+PRILBL[s.pri||'none']+'</button></div>'
-      +'<textarea class="note" placeholder="Add a comment…" oninput="setNote(\''+s.id+'\',this.value)">'+(s.note||'')+'</textarea>'
-      +'<div class="editrow"><button class="mini" onclick="move(\''+s.id+'\',-1)">↑ Up</button><button class="mini" onclick="move(\''+s.id+'\',1)">↓ Down</button><button class="mini del" onclick="del(\''+s.id+'\')">Delete</button></div>'
-      +'</div></div></div></div>';
+      +'<div class="acts">'+map+copy+'<button class="pri '+(s.pri||'none')+'" onclick="cyclePri(event,\''+s.id+'\')">'+PRILBL[s.pri||'none']+'</button></div>'
+      +'<textarea class="note" placeholder="Add a comment…" onclick="event.stopPropagation()" oninput="setNote(\''+s.id+'\',this.value)">'+(s.note||'')+'</textarea>'
+      +'<div class="editrow"><button class="mini" onclick="move(event,\''+s.id+'\',-1)">Up</button><button class="mini" onclick="move(event,\''+s.id+'\',1)">Down</button><button class="mini del" onclick="del(event,\''+s.id+'\')">Delete</button></div>'
+      +'</div>';
   });
   h+='</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">';
   setPanel(h);
 }
-
-function addForm(di){
-  return '<div class="addform '+(addOpen?'on':'')+'">'
-    +'<input id="a_n" placeholder="Place name">'
-    +'<div class="g"><select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select><input id="a_t" placeholder="Time (opt)"></div>'
-    +'<input id="a_addr" placeholder="Vietnamese address (opt)">'
-    +'<textarea id="a_note" placeholder="Note (opt)"></textarea>'
-    +'<button class="tbtn" onclick="addPlace('+di+')">Add to '+state.data.days[di].tab+'</button></div>';
-}
+function addFields(di){return '<input id="a_n" placeholder="Place name"><div class="g"><select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select><input id="a_t" placeholder="Time (opt)"></div><input id="a_addr" placeholder="Vietnamese address (opt)"><textarea id="a_note" placeholder="Note (opt)"></textarea><button class="btn" onclick="addPlace('+di+')">Add to '+state.data.days[di].tab+'</button>';}
 
 function renderBudget(){
-  const totalV=state.spend.reduce((a,e)=>a+(e.cur==='SGD'?e.amt*state.rate:e.amt),0);
-  let rows=state.spend.map((e,i)=>'<div class="row-e"><span>'+(e.label||'—')+'</span><span>'+(e.cur==='SGD'?'S$'+e.amt:'₫'+Number(e.amt).toLocaleString())+' <span class="x" onclick="delExp('+i+')">✕</span></span></div>').join('');
-  const h='<div class="dayhead"><div><h2>Budget</h2><div class="sub">Log spend as you go</div></div></div>'
-  +'<div class="panelbox">'
-  +'<div class="exp"><input class="lbl" id="e_l" placeholder="What?"><input class="amt" id="e_a" type="number" inputmode="decimal" placeholder="Amount"><select id="e_c"><option>VND</option><option>SGD</option></select><button class="tbtn" onclick="addExp()">Add</button></div>'
-  +(rows||'<div class="muted">Nothing logged yet.</div>')
-  +'<div class="total"><span>Total</span><span class="big">₫'+Math.round(totalV).toLocaleString()+'</span></div>'
-  +'<div class="total" style="font-weight:600;font-size:13px;color:var(--soft)"><span></span><span>≈ S$'+(totalV/state.rate).toFixed(2)+'</span></div>'
-  +'<div class="rate">Rate: 1 SGD ≈ ₫<input id="e_r" type="number" value="'+state.rate+'" onchange="setRate(this.value)"></div>'
-  +'</div>';
+  const tv=state.spend.reduce((a,e)=>a+(e.cur==='SGD'?e.amt*state.rate:e.amt),0);
+  let rows=state.spend.map((e,i)=>'<div class="erow"><span>'+(e.label||'—')+'</span><span>'+(e.cur==='SGD'?'S$'+e.amt:'₫'+Number(e.amt).toLocaleString())+' <span class="x" onclick="delExp('+i+')">✕</span></span></div>').join('');
+  const h='<div class="dh"><div><h2>Budget</h2><div class="sub">Log spend as you go</div></div></div>'
+   +'<div class="group"><div class="exp"><input class="lbl" id="e_l" placeholder="What?"><input class="amt" id="e_a" type="number" inputmode="decimal" placeholder="Amount"><select id="e_c"><option>VND</option><option>SGD</option></select><button class="btn" onclick="addExp()">Add</button></div>'
+   +(rows||'<div class="muted">Nothing logged yet.</div>')
+   +'<div class="total"><span>Total</span><span class="big">₫'+Math.round(tv).toLocaleString()+'</span></div>'
+   +'<div class="rate">≈ S$'+(tv/state.rate).toFixed(2)+' &nbsp;·&nbsp; 1 SGD ≈ ₫<input id="e_r" type="number" value="'+state.rate+'" onchange="setRate(this.value)"></div></div>';
   setPanel(h);
 }
-
 function renderShots(){
   let rows=state.data.photos.map(p=>'<div class="shot '+(state.photosDone[p.id]?'done':'')+'" onclick="togglePhoto(\''+p.id+'\')"><span class="b"></span><span class="t">'+p.t+'</span></div>').join('');
   const dn=state.data.photos.filter(p=>state.photosDone[p.id]).length;
-  const h='<div class="dayhead"><div><h2>Shot list</h2><div class="sub">Content to capture</div></div><div class="prog">'+dn+' / '+state.data.photos.length+'</div></div><div class="panelbox">'+rows+'</div>';
-  setPanel(h);
+  setPanel('<div class="dh"><div><h2>Shot list</h2><div class="sub">Content to capture</div></div><div class="wx">'+dn+' / '+state.data.photos.length+'</div></div><div class="group">'+rows+'</div>');
 }
+function setPanel(h){panelsEl.innerHTML='<section>'+h+'</section>';}
 
-function setPanel(html){panelsEl.innerHTML='<section class="day on">'+html+'</section>';}
-
+function rowTap(ev,row){row.classList.toggle('open');}
 function setSort(s){sort=s;render();}
 function toggleEdit(){editing=!editing;addOpen=false;render();}
 function toggleAdd(){addOpen=!addOpen;render();}
-function toggleOpen(hd){hd.closest('.stop').classList.toggle('open');}
-function toggleDone(id){state.done[id]=!state.done[id];persist();render();}
-function cyclePri(id){const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();render();}
+function toggleDone(ev,id){ev.stopPropagation();state.done[id]=!state.done[id];persist();render();}
+function cyclePri(ev,id){ev.stopPropagation();const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();render();}
 function setNote(id,v){const s=findStop(id);if(s){s.note=v;persist();}}
-function move(id,dir){const d=state.data.days[cur];const i=d.stops.findIndex(s=>s.id===id);const j=i+dir;if(i<0||j<0||j>=d.stops.length)return;const t=d.stops[i];d.stops[i]=d.stops[j];d.stops[j]=t;sort='plan';persist();render();}
-function del(id){const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
-function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Name needed');return;}const stop={id:'u'+Date.now(),n:n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!stop.addr)delete stop.addr;state.data.days[di].stops.push(stop);addOpen=false;persist();render();toast('Added');}
+function move(ev,id,dir){ev.stopPropagation();const d=state.data.days[cur];const i=d.stops.findIndex(s=>s.id===id);const j=i+dir;if(i<0||j<0||j>=d.stops.length)return;const t=d.stops[i];d.stops[i]=d.stops[j];d.stops[j]=t;sort='plan';persist();render();}
+function del(ev,id){ev.stopPropagation();const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
+function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Name needed');return;}const st={id:'u'+Date.now(),n:n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!st.addr)delete st.addr;state.data.days[di].stops.push(st);addOpen=false;persist();render();toast('Added');}
 function findStop(id){for(const d of state.data.days){const s=d.stops.find(x=>x.id===id);if(s)return s;}return null;}
-
-function copyText(btn,txt){const t=txt.replace(/\\'/g,"'");const done=()=>{const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));}else fb(t,done);}
+function copyText(btn,txt){const t=txt.replace(/\\'/g,"'");const done=()=>{const o=btn.textContent;btn.textContent='Copied';setTimeout(()=>btn.textContent=o,1100);};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));else fb(t,done);}
 function fb(t,cb){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb&&cb();}
-
-function locate(){if(!navigator.geolocation){toast('No GPS available');return;}toast('Locating…');navigator.geolocation.getCurrentPosition(p=>{state.geo={lat:p.coords.latitude,lng:p.coords.longitude};sort='near';render();toast('Located — sorted by nearest');},()=>toast('Location denied'),{enableHighAccuracy:true,timeout:8000});}
-
+function locate(){if(!navigator.geolocation){toast('No GPS available');return;}toast('Locating…');navigator.geolocation.getCurrentPosition(p=>{state.geo={lat:p.coords.latitude,lng:p.coords.longitude};sort='near';render();toast('Sorted by nearest');},()=>toast('Location denied'),{enableHighAccuracy:true,timeout:8000});}
 function addExp(){const l=document.getElementById('e_l').value.trim();const a=parseFloat(document.getElementById('e_a').value);const c=document.getElementById('e_c').value;if(!a){toast('Amount needed');return;}state.spend.push({label:l,amt:a,cur:c});persist();render();}
 function delExp(i){state.spend.splice(i,1);persist();render();}
 function setRate(v){const n=parseFloat(v);if(n>0){state.rate=n;persist();render();}}
 function togglePhoto(id){state.photosDone[id]=!state.photosDone[id];persist();render();}
-
-function exportData(){const blob=new Blob([JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trip-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Exported trip-data.json');}
-function importData(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.data)state.data=o.data;if(o.spend)state.spend=o.spend;if(o.done)state.done=o.done;if(o.photosDone)state.photosDone=o.photosDone;if(o.rate)state.rate=o.rate;persist();buildTabs();select(0);toast('Imported');}catch(e){toast('Bad file');}};r.readAsText(file);}
-
+function exportData(){const blob=new Blob([JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='trip-data.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Exported');}
+function importData(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(o.data)state.data=o.data;if(o.spend)state.spend=o.spend;if(o.done)state.done=o.done;if(o.photosDone)state.photosDone=o.photosDone;if(o.rate)state.rate=o.rate;persist();buildDays();select(0);toast('Imported');}catch(e){toast('Bad file');}};r.readAsText(file);}
 function todayIndex(){const iso=new Date().toISOString().slice(0,10);const i=state.data.days.findIndex(d=>d.iso===iso);return i<0?0:i;}
 
-(async function(){await restore();setStatus();buildTabs();cur=todayIndex();render();})();
+document.getElementById('ic_pl1').innerHTML=svg('plane',13,'#2E6FE6');
+document.getElementById('ic_pl2').innerHTML=svg('plane',13,'#2E6FE6');
+document.getElementById('ic_home').innerHTML=svg('pin',18,'#2E6FE6');
+
+(async function(){await restore();setStatus();buildDays();cur=todayIndex();render();await loadWx();render();})();
 </script>
 </body>
 </html>
