@@ -6,136 +6,192 @@
 <title>HCMC '26 — Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F4F1E8; --card:#FFF; --ink:#23241F; --soft:#6C6E63; --line:#E4E0D3;
-    --d1:#E86A3C; --thao:#2FA090; --d3:#E0669A; --night:#6B54E6; --base:#CF9A2C; --scoot:#F4E035;
-    --must:#D8433B; --want:#2FA090; --maybe:#9A8F72;
+    --paper:#F3F4F1; --card:#FFF; --ink:#1B1C1A; --soft:#73756D; --faint:#9B9C93;
+    --line:#E6E7E1; --line2:#EFF0EB;
+    --d1:#E15A3E; --thao:#1C9C8B; --d3:#D85E92; --night:#5A4BD4; --base:#C6971F; --scoot:#F5DE2E;
+    --must:#D8433B; --want:#1C9C8B; --maybe:#9A8F72;
+    --sp:16px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0}
-  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;padding-bottom:60px}
-  .wrap{max-width:580px;margin:0 auto;padding:0 14px}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;padding-bottom:60px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:600px;margin:0 auto;padding:0 15px}
   button{font-family:inherit}
   a{color:inherit}
+  ::selection{background:var(--scoot)}
 
-  .pass{background:var(--scoot);border-radius:18px;margin:16px 0 10px;padding:16px 18px 14px;color:#171712;position:relative;overflow:hidden;box-shadow:0 6px 22px rgba(140,120,0,.18)}
-  .pass::before,.pass::after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;background:var(--paper);top:50%;transform:translateY(-50%)}
-  .pass::before{left:-11px}.pass::after{right:-11px}
-  .pass .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-  .pass h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;margin:0;line-height:1}
-  .pass .ref{font-size:11px;font-weight:600;opacity:.7;font-variant-numeric:tabular-nums}
-  .pass .who{font-weight:600;font-size:13px;margin-top:2px}
-  .pass .legs{display:flex;gap:14px;margin-top:12px;padding-top:11px;border-top:1.5px dashed rgba(0,0,0,.28)}
-  .leg{font-size:12px;line-height:1.35}
-  .leg b{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700}
-  .leg span{display:block;opacity:.65;font-weight:500}
+  /* ---------------- boarding pass ---------------- */
+  .pass{background:var(--scoot);border-radius:20px;margin:18px 0 12px;padding:18px 20px 16px;color:#161509;position:relative;box-shadow:0 8px 26px rgba(150,128,0,.16)}
+  .pass-top{display:flex;justify-content:space-between;align-items:center}
+  .pass h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;letter-spacing:-.025em;margin:0;line-height:1}
+  .status{font-size:11px;font-weight:700;background:#161509;color:var(--scoot);padding:4px 10px;border-radius:20px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .pass-sub{font-size:12px;font-weight:500;margin-top:5px;opacity:.72;font-variant-numeric:tabular-nums}
+  .flight{padding:13px 0 3px}
+  .flabel{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.62;margin-bottom:7px}
+  .frow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+  .ap{min-width:0}
+  .ap.r{text-align:right}
+  .ap .code{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;line-height:1;letter-spacing:.01em}
+  .ap .tm{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:1px}
+  .ap .term{font-size:10.5px;opacity:.62;margin-top:2px;line-height:1.2}
+  .arc{display:flex;flex-direction:column;align-items:center;gap:2px;padding:0 2px}
+  .arc .dur{font-size:9.5px;opacity:.6;font-variant-numeric:tabular-nums}
+  .arc svg{display:block}
+  .arc .rail{width:52px;height:1.5px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 4px,transparent 4px 8px)}
+  .perf{position:relative;height:1px;background:none;margin:11px 0 2px;border-top:1.5px dashed rgba(0,0,0,.28)}
+  .perf::before,.perf::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:var(--paper);top:50%;transform:translateY(-50%)}
+  .perf::before{left:-30px}.perf::after{right:-30px}
 
-  .legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:4px 2px 10px;font-size:11.5px;color:var(--soft)}
-  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+  /* ---------------- home base bar ---------------- */
+  .homebar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 13px;margin-bottom:10px}
+  .homebar .hl{min-width:0;font-size:13px}
+  .homebar .hl b{font-weight:600}
+  .homebar .hl .co{color:var(--faint);font-size:11.5px;font-variant-numeric:tabular-nums;display:block;margin-top:1px}
+  .homebar .ha{display:flex;gap:7px;flex:0 0 auto}
 
-  .tabs{position:sticky;top:0;z-index:20;background:var(--paper);display:flex;gap:4px;overflow-x:auto;padding:8px 14px;margin:0 -14px;scrollbar-width:none}
+  .legend{display:flex;flex-wrap:wrap;gap:5px 13px;margin:2px 3px 12px;font-size:11px;color:var(--soft)}
+  .legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
+  /* ---------------- tabs ---------------- */
+  .tabs{position:sticky;top:0;z-index:20;background:var(--paper);display:flex;gap:3px;overflow-x:auto;padding:9px 15px;margin:0 -15px;scrollbar-width:none;border-bottom:1px solid var(--line2)}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:0 0 auto;border:none;background:transparent;cursor:pointer;color:var(--soft);padding:6px 12px 8px;border-radius:11px;text-align:center;line-height:1.15;transition:.15s}
-  .tab b{display:block;font-size:14px;font-weight:600;color:var(--ink)}
-  .tab small{font-size:10.5px;font-variant-numeric:tabular-nums}
-  .tab .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-top:4px}
+  .tab{flex:0 0 auto;border:none;background:transparent;cursor:pointer;color:var(--soft);padding:5px 13px 7px;border-radius:11px;text-align:center;line-height:1.15;transition:.15s}
+  .tab b{display:block;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .tab small{font-size:10px;font-variant-numeric:tabular-nums;color:var(--faint)}
+  .tab .dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-top:3px}
   .tab[aria-selected="true"]{background:var(--ink)}
   .tab[aria-selected="true"] b,.tab[aria-selected="true"] small{color:var(--paper)}
 
-  .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 2px 6px}
+  /* ---------------- toolbar ---------------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:13px 3px 4px}
   .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:9px;overflow:hidden}
-  .seg button{border:none;background:transparent;padding:6px 10px;font-size:12px;font-weight:600;color:var(--soft);cursor:pointer}
+  .seg button{border:none;background:transparent;padding:6px 11px;font-size:12px;font-weight:600;color:var(--soft);cursor:pointer}
   .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-  .tbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
+  .tbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 11px;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
   .tbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .spacer{flex:1}
 
-  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin:8px 2px 12px}
-  .dayhead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;margin:0}
+  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;margin:10px 3px 13px}
+  .dayhead h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.015em;margin:0}
   .dayhead .sub{color:var(--soft);font-size:12.5px;margin-top:3px}
-  .prog{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .prog{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
 
+  /* ---------------- timeline ---------------- */
   .day{display:none}.day.on{display:block}
-  .line{position:relative;padding-left:26px}
-  .line::before{content:"";position:absolute;left:8px;top:6px;bottom:10px;width:2px;background:var(--line)}
-  .stop{position:relative;margin-bottom:9px}
-  .stop::before{content:"";position:absolute;left:-22px;top:16px;width:11px;height:11px;border-radius:50%;background:var(--z);border:2.5px solid var(--paper);box-shadow:0 0 0 1.5px var(--z)}
-  .card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--z);border-radius:12px;padding:11px 12px;transition:.15s}
-  .top{display:flex;align-items:flex-start;gap:9px}
-  .tick{flex:0 0 auto;width:21px;height:21px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;margin-top:1px;position:relative;transition:.15s}
-  .tick::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--z);transform:scale(0);transition:.15s}
+  .line{position:relative;padding-left:24px}
+  .line::before{content:"";position:absolute;left:6px;top:8px;bottom:12px;width:1.5px;background:var(--line)}
+  .stop{position:relative;margin-bottom:8px}
+  .stop::before{content:"";position:absolute;left:-22.5px;top:17px;width:9px;height:9px;border-radius:50%;background:var(--z);border:2px solid var(--paper);box-shadow:0 0 0 1.5px var(--z)}
+  .card{background:var(--card);border:1px solid var(--line);border-left:2.5px solid var(--z);border-radius:12px;padding:11px 13px;transition:border-color .15s}
+  .top{display:flex;align-items:flex-start;gap:10px}
+  .tick{flex:0 0 auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;margin-top:1px;position:relative;transition:.15s}
+  .tick::after{content:"";position:absolute;inset:3.5px;border-radius:50%;background:var(--z);transform:scale(0);transition:transform .15s}
   .main{flex:1;min-width:0}
   .hd{cursor:pointer}
-  .nm{font-weight:600;font-size:14.5px;line-height:1.25}
-  .nm .em{margin-right:5px}
-  .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:3px}
-  .chip{font-size:10px;font-weight:600;color:#fff;background:var(--z);padding:1px 7px;border-radius:20px}
-  .when{font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
-  .dist{font-size:11px;color:var(--soft);font-variant-numeric:tabular-nums}
-  .dist b{color:var(--ink);font-weight:600}
-  .flag{font-size:10px;font-weight:600;color:#7a5a10;background:#F7E39A;padding:1px 7px;border-radius:20px}
-  .pri{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;border:1.5px solid;cursor:pointer;background:#fff}
+  .nm{font-weight:600;font-size:14.5px;line-height:1.3;display:flex;align-items:baseline;gap:7px}
+  .nm .em{flex:0 0 auto}
+  .nm .txt{flex:1;min-width:0}
+  .pdot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;margin-top:6px}
+  .meta{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:center;margin-top:4px;font-size:11.5px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .meta .sep{color:var(--line);margin:0 -3px}
+  .meta b{color:var(--ink);font-weight:600}
+  .flag{font-size:10px;font-weight:600;color:#8a6a12;border:1px solid #E9D48F;background:#FBF4D9;padding:1px 7px;border-radius:20px}
+  .body{display:none;margin-top:10px;padding-top:2px}
+  .stop.open .body{display:block}
+  .addr{font-size:12.5px;color:var(--ink);opacity:.8;margin-bottom:5px}
+  .desc{font-size:13px;color:var(--soft);line-height:1.5}
+  .acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .lk{font-size:12px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;background:#fff;color:var(--ink);transition:.12s}
+  .lk:hover{border-color:var(--z);color:var(--z)}
+  .lk.grab{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pri{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;border:1px solid;cursor:pointer;background:#fff}
   .pri.must{color:var(--must);border-color:var(--must)}
   .pri.want{color:var(--want);border-color:var(--want)}
   .pri.maybe{color:var(--maybe);border-color:var(--maybe)}
   .pri.none{color:var(--soft);border-color:var(--line)}
-  .body{display:none;margin-top:9px}
-  .stop.open .body{display:block}
-  .desc{font-size:13px;color:var(--soft)}
-  .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
-  .lk{font-size:12px;font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;background:#fff;color:var(--ink)}
-  .lk:hover{border-color:var(--z);color:var(--z)}
-  .note{width:100%;margin-top:9px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-family:inherit;font-size:13px;resize:vertical;min-height:38px;background:#FCFBF6}
-  .note::placeholder{color:#B7B3A4}
+  .note{width:100%;margin-top:10px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13px;resize:vertical;min-height:38px;background:#FBFBF9;color:var(--ink)}
+  .note::placeholder{color:var(--faint)}
+  .note:focus{outline:none;border-color:var(--z)}
   .editrow{display:none;gap:6px;margin-top:9px}
   .stop.editing .editrow{display:flex}
-  .mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 9px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink)}
-  .mini.del{color:var(--must);border-color:#f0c9c6}
-  .stop.done .card{opacity:.5}.stop.done .nm{text-decoration:line-through}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink)}
+  .mini.del{color:var(--must);border-color:#E6C8C5}
+  .stop.done .card{opacity:.48}.stop.done .nm .txt{text-decoration:line-through}
   .stop.done .tick{border-color:var(--z)}.stop.done .tick::after{transform:scale(1)}
 
-  .addform{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:12px;margin:4px 0 10px;display:none}
+  .addform{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:13px;margin:2px 0 10px;display:none}
   .addform.on{display:block}
-  .addform input,.addform select,.addform textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;margin-bottom:7px;background:#FCFBF6}
-  .addform .g{display:flex;gap:7px}.addform .g>*{flex:1}
+  .addform input,.addform select,.addform textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:13px;margin-bottom:8px;background:#FBFBF9;color:var(--ink)}
+  .addform .g{display:flex;gap:8px}.addform .g>*{flex:1}
 
-  .panelbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
-  .panelbox h3{font-family:'Bricolage Grotesque',sans-serif;margin:0 0 4px;font-size:17px}
-  .panelbox .muted{color:var(--soft);font-size:12.5px;margin:0 0 10px}
-  .exp{display:flex;gap:7px;align-items:center;margin-bottom:7px}
-  .exp input{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-family:inherit;font-size:13px;background:#FCFBF6}
-  .exp .lbl{flex:1;min-width:0}.exp .amt{width:96px}
-  .row-e{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .panelbox{background:#fff;border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:10px}
+  .panelbox .muted{color:var(--soft);font-size:12.5px;margin:6px 0 0}
+  .exp{display:flex;gap:7px;align-items:center;margin-bottom:10px}
+  .exp input,.exp select{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;background:#FBFBF9;color:var(--ink)}
+  .exp .lbl{flex:1;min-width:0}.exp .amt{width:92px}
+  .row-e{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13.5px}
   .row-e .x{color:var(--must);cursor:pointer;font-weight:700;padding:0 4px}
-  .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;font-weight:700}
-  .total .big{font-family:'Bricolage Grotesque',sans-serif;font-size:22px}
-  .rate{font-size:11.5px;color:var(--soft);margin-top:6px;display:flex;align-items:center;gap:6px}
-  .rate input{width:82px;border:1px solid var(--line);border-radius:7px;padding:4px 7px;font-family:inherit;font-size:12px;font-variant-numeric:tabular-nums}
-  .shot{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}
+  .total .big{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:700}
+  .rate{font-size:11.5px;color:var(--soft);margin-top:8px;display:flex;align-items:center;gap:6px}
+  .rate input{width:82px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:inherit;font-size:12px;font-variant-numeric:tabular-nums;background:#FBFBF9}
+  .shot{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+  .shot:last-child{border-bottom:none}
   .shot .b{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:0 0 auto;position:relative}
   .shot.done .b{background:var(--d3);border-color:var(--d3)}
   .shot.done .b::after{content:"✓";color:#fff;font-size:12px;position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
   .shot.done .t{text-decoration:line-through;color:var(--soft)}
-  details.pub{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0}
+
+  details.pub{background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin:14px 0}
   details.pub summary{font-weight:600;cursor:pointer;font-size:13.5px}
   details.pub ol{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--soft);line-height:1.7}
-  details.pub code{background:#F1EEE3;padding:1px 5px;border-radius:5px;font-size:12px}
-  footer{text-align:center;color:var(--soft);font-size:11px;padding:18px 0 8px}
-  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:20px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:50}
-  .toast.on{opacity:1}
+  details.pub code{background:#F0F1EC;padding:1px 5px;border-radius:5px;font-size:12px}
+  footer{text-align:center;color:var(--faint);font-size:11px;padding:18px 0 8px}
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:22px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.22s;z-index:50}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="pass">
-    <div class="row"><h1>HCMC '26</h1><span class="ref">SCOOT · LHCL3R</span></div>
-    <div class="who">Elijah + Ashley</div>
-    <div class="legs">
-      <div class="leg"><b>SIN → SGN</b><span>Thu 10 Sep · 14:40</span></div>
-      <div class="leg"><b>SGN → SIN</b><span>Tue 15 Sep · 15:40</span></div>
+
+  <div class="pass" id="pass">
+    <div class="pass-top">
+      <h1>HCMC '26</h1>
+      <span class="status" id="status">—</span>
+    </div>
+    <div class="pass-sub">Elijah + Ashley · Scoot · LHCL3R</div>
+
+    <div class="flight">
+      <div class="flabel">Outbound · TR552 · Thu 10 Sep</div>
+      <div class="frow">
+        <div class="ap"><div class="code">SIN</div><div class="tm">13:25</div><div class="term">Changi T1</div></div>
+        <div class="arc"><span class="dur">2h 15m</span><span class="rail"></span></div>
+        <div class="ap r"><div class="code">SGN</div><div class="tm">14:40</div><div class="term">Tân Sơn Nhất T2</div></div>
+      </div>
+    </div>
+    <div class="perf"></div>
+    <div class="flight">
+      <div class="flabel">Return · TR553 · Tue 15 Sep</div>
+      <div class="frow">
+        <div class="ap"><div class="code">SGN</div><div class="tm">15:40</div><div class="term">Tân Sơn Nhất T2</div></div>
+        <div class="arc"><span class="dur">2h 05m</span><span class="rail"></span></div>
+        <div class="ap r"><div class="code">SIN</div><div class="tm">18:45</div><div class="term">Changi T1</div></div>
+      </div>
     </div>
   </div>
+
+  <div class="homebar">
+    <div class="hl"><b>🏠 Home base</b> · Bùi Viện, Q1<span class="co">10.7648, 106.6913</span></div>
+    <div class="ha">
+      <button class="lk grab" onclick="copyText(this,'10.764750, 106.691250')">Copy for Grab</button>
+      <a class="lk" href="https://www.google.com/maps/search/?api=1&query=10.764750,106.691250" target="_blank" rel="noopener">Map</a>
+    </div>
+  </div>
+
   <div class="legend">
     <span><i style="background:var(--d1)"></i>District 1</span>
     <span><i style="background:var(--thao)"></i>Thảo Điền</span>
@@ -143,27 +199,26 @@
     <span><i style="background:var(--night)"></i>Nights</span>
     <span><i style="background:var(--base)"></i>Base / day trip</span>
   </div>
+
   <div class="tabs" id="tabs" role="tablist"></div>
   <div id="panels"></div>
 
   <details class="pub">
-    <summary>Publish to GitHub Pages + export your edits</summary>
+    <summary>Publish to GitHub + export your edits</summary>
     <ol>
-      <li>Create a repo (e.g. <code>hcmc26</code>) on your GitHub.</li>
-      <li>Upload this file as <code>index.html</code>.</li>
-      <li>Settings → Pages → deploy from <code>main</code> / root. Your site: <code>yeelaiii.github.io/hcmc26</code>.</li>
-      <li>Made edits here? Tap <b>Export</b> (top bar), commit the downloaded <code>trip-data.json</code> next to <code>index.html</code> — now every device (incl. Ashley's) loads your latest plan.</li>
-      <li>New device fresh? It reads <code>trip-data.json</code> automatically. Tap <b>Import</b> to load one manually.</li>
+      <li>Repo (e.g. <code>hcm-2026</code>) → upload this file as <code>index.html</code>.</li>
+      <li>Settings → Pages → deploy from <code>main</code> / root.</li>
+      <li>Edited here? Tap <b>Export</b>, commit <code>trip-data.json</code> beside <code>index.html</code> — every device (incl. Ashley's) loads your latest plan.</li>
     </ol>
   </details>
-  <footer>Edits save on this phone · Export to make them permanent / shared</footer>
+  <footer>Edits save on this phone · Export to make them permanent + shared</footer>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-const HOME={lat:10.7648,lng:106.6913};
+const HOME={lat:10.76475,lng:106.69125};
 const Z={d1:'var(--d1)',thao:'var(--thao)',d3:'var(--d3)',night:'var(--night)',base:'var(--base)'};
-const ZN={d1:'D1',thao:'Thảo Điền',d3:'D3',night:'Night',base:'Base'};
+const ZN={d1:'District 1',thao:'Thảo Điền',d3:'D3 / Tân Định',night:'Night',base:'Base'};
 const PRIS=['none','must','want','maybe'];
 const PRILBL={none:'Set priority',must:'Must',want:'Want',maybe:'Maybe'};
 
@@ -171,7 +226,7 @@ const DEFAULT={
  rate:19000,
  days:[
   {key:'thu',tab:'Thu',date:'10',iso:'2026-09-10',dot:'base',title:'Arrival',sub:'Land 14:40 · settle in · easy night',stops:[
-    {id:'d0',t:'16:30',e:'🛬',n:'Airbnb check-in',z:'base',lat:10.7648,lng:106.6913,addr:'Bùi Viện / Phạm Ngũ Lão, Quận 1',d:'Drop bags, settle by 17:00.'},
+    {id:'d0',t:'16:30',e:'🛬',n:'Airbnb check-in',z:'base',lat:10.76475,lng:106.69125,addr:'10.764750, 106.691250',grab:'10.764750, 106.691250',d:'Bùi Viện / Phạm Ngũ Lão, Quận 1. Drop bags, settle by 17:00.'},
     {id:'d1',t:'17:30',e:'🍕',n:'Pizza 4P\u2019s Le Thanh Ton',z:'d1',lat:10.7802,lng:106.7030,addr:'8 Lê Thánh Tôn, Bến Nghé, Quận 1',m:'Pizza 4Ps Le Thanh Ton',flag:'Book ahead',pri:'must',d:'Your must-visit first meal.'},
     {id:'d2',t:'evening',e:'💆',n:'Scout area + massage',z:'base',d:'Wander home streets, scope shops, cheap foot/body massage to reset.'}
   ]},
@@ -201,7 +256,7 @@ const DEFAULT={
     {id:'s4',t:'20:00',e:'🏮',n:'Ben Thanh Night Market',z:'d1',lat:10.7724,lng:106.6980,addr:'Phan Bội Châu / Lưu Văn Lang, Bến Thành, Quận 1',m:'Ben Thanh Night Market',d:'Shopping + street food. Keep it short — 2am start tomorrow.'}
   ]},
   {key:'sun',tab:'Sun',date:'13',iso:'2026-09-13',dot:'base',title:'Mui Ne dunes',sub:'2am–2pm day trip · rest · rooftop dinner',stops:[
-    {id:'u0',t:'02:00',e:'🏜️',n:'Mui Ne sand dunes — day trip',z:'base',lat:10.7648,lng:106.6913,addr:'Pickup below the Airbnb',m:'Mui Ne Sand Dunes',flag:'Booked ✓',pri:'must',d:'Sleep on the bus, sunrise at the white dunes, jeep, fairy stream. Back ~14:00.'},
+    {id:'u0',t:'02:00',e:'🏜️',n:'Mui Ne sand dunes — day trip',z:'base',lat:10.76475,lng:106.69125,addr:'Pickup below the Airbnb',m:'Mui Ne Sand Dunes',flag:'Booked ✓',pri:'must',d:'Sleep on the bus, sunrise at the white dunes, jeep, fairy stream. Back ~14:00.'},
     {id:'u1',t:'15:00',e:'🚿',n:'Freshen up / power nap',z:'base',d:'Regroup after the early start.'},
     {id:'u2',t:'15:30',e:'🛍️',n:'Easy afternoon shop',z:'d1',lat:10.7724,lng:106.6980,addr:'Around Bến Thành / Quận 1',d:'Nothing far — mop up anything missed.'},
     {id:'u3',t:'17:30',e:'🌆',n:'Chill Skybar & Dining',z:'night',lat:10.7706,lng:106.6944,addr:'Tầng 26–27, AB Tower, 76A Lê Lai, Bến Thành, Quận 1',m:'Chill Skybar AB Tower Le Lai',flag:'Dress code',pri:'want',d:'Panoramic views, DJ, full dinner. Opens 5:30pm. Smart-casual, pricey.'}
@@ -218,7 +273,7 @@ const DEFAULT={
   {key:'tue',tab:'Tue',date:'15',iso:'2026-09-15',dot:'base',title:'Departure',sub:'Brunch · pack · fly 15:40',stops:[
     {id:'t0',t:'morning',e:'🥐',n:'Final brunch + light shop',z:'base',d:'Near home, last-minute souvenirs.'},
     {id:'t1',t:'',e:'🧳',n:'Pack',z:'base',d:'Make sure the new luggage earns its keep.'},
-    {id:'t2',t:'12:30',e:'🚕',n:'Leave for airport',z:'base',lat:10.8188,lng:106.6520,addr:'Ga quốc tế (T2), Tân Sơn Nhất',m:'Tan Son Nhat International Airport',flag:'TR553 15:40',pri:'must',d:'Grab to the airport for the 15:40 flight.'}
+    {id:'t2',t:'12:30',e:'🚕',n:'Leave for airport',z:'base',lat:10.8188,lng:106.6520,addr:'Ga quốc tế (T2), Tân Sơn Nhất',m:'Tan Son Nhat International Airport',flag:'TR553 · 15:40',pri:'must',d:'Grab to the airport for the 15:40 return flight.'}
   ]}
  ],
  extras:[
@@ -246,6 +301,15 @@ function toast(t){const el=document.getElementById('toast');el.textContent=t;el.
 function hav(a,b){if(!a||!b)return null;const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function km(d){return d==null?'':(d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km');}
 
+function setStatus(){
+  const el=document.getElementById('status');
+  const start=new Date('2026-09-10T00:00:00'),end=new Date('2026-09-15T23:59:59');
+  const now=new Date();const oneDay=864e5;
+  if(now<start){const days=Math.ceil((start-now)/oneDay);el.textContent=days+' day'+(days===1?'':'s')+' to go';}
+  else if(now>end){el.textContent='Trip complete';}
+  else{const d=Math.floor((now-start)/oneDay)+1;el.textContent='Day '+d+' of 6';}
+}
+
 async function persist(){
   const p=JSON.stringify({data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate});
   try{await window.storage.set('hcmc26',p);}catch(e){}
@@ -272,12 +336,12 @@ function buildTabs(){
   tabsEl.innerHTML='';
   state.data.days.forEach((d,di)=>{
     const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');
-    b.innerHTML=`<b>${d.tab}</b><small>${d.date} Sep</small><br><span class="dot" style="background:${Z[d.dot]}"></span>`;
+    b.innerHTML='<b>'+d.tab+'</b><small>'+d.date+' Sep</small><br><span class="dot" style="background:'+Z[d.dot]+'"></span>';
     b.onclick=()=>select(di);tabsEl.appendChild(b);
   });
-  [['budget','💰','Budget'],['shots','📸','Shots']].forEach(([k,e,l],j)=>{
-    const b=document.createElement('button');b.className='tab';b.dataset.special=k;
-    b.innerHTML=`<b>${e}</b><small>${l}</small><br><span class="dot" style="background:var(--ink)"></span>`;
+  [['💰','Budget'],['📸','Shots']].forEach(([e,l],j)=>{
+    const b=document.createElement('button');b.className='tab';
+    b.innerHTML='<b>'+e+'</b><small>'+l+'</small><br><span class="dot" style="background:var(--ink)"></span>';
     b.onclick=()=>select(state.data.days.length+j);tabsEl.appendChild(b);
   });
 }
@@ -292,110 +356,87 @@ function render(){
 }
 
 function priCls(p){return 'pri '+(p||'none');}
+function esc(s){return (s||'').replace(/'/g,"\\'");}
 function renderDay(di){
   const d=state.data.days[di];
-  const rp=refPoint();
   const stops=sortStops(d.stops);
   const total=d.stops.length,dn=d.stops.filter(s=>state.done[s.id]).length;
-  let h=`<div class="toolbar">
-    <div class="seg" role="group">
-      <button aria-pressed="${sort==='plan'}" onclick="setSort('plan')">Plan</button>
-      <button aria-pressed="${sort==='near'}" onclick="setSort('near')">Nearest</button>
-      <button aria-pressed="${sort==='pri'}" onclick="setSort('pri')">Priority</button>
-    </div>
-    <button class="tbtn" onclick="locate()">${state.geo?'📍 Located':'Locate me'}</button>
-    <button class="tbtn" aria-pressed="${editing}" onclick="toggleEdit()">${editing?'Done':'Edit'}</button>
-    <button class="tbtn" onclick="exportData()">Export</button>
-    <button class="tbtn" onclick="document.getElementById('imp').click()">Import</button>
-  </div>
-  <div class="dayhead"><div><h2>${d.title}</h2><div class="sub">${d.sub}</div></div><div class="prog">${dn} / ${total}</div></div>`;
-  if(editing)h+=`<button class="tbtn" style="margin:0 2px 8px" onclick="toggleAdd()">+ Add a place</button>${addForm(di)}`;
-  h+=`<div class="line">`;
+  let h='<div class="toolbar">'
+    +'<div class="seg" role="group">'
+    +'<button aria-pressed="'+(sort==='plan')+'" onclick="setSort(\'plan\')">Plan</button>'
+    +'<button aria-pressed="'+(sort==='near')+'" onclick="setSort(\'near\')">Nearest</button>'
+    +'<button aria-pressed="'+(sort==='pri')+'" onclick="setSort(\'pri\')">Priority</button>'
+    +'</div>'
+    +'<button class="tbtn" onclick="locate()">'+(state.geo?'📍 Located':'Locate me')+'</button>'
+    +'<span class="spacer"></span>'
+    +'<button class="tbtn" aria-pressed="'+editing+'" onclick="toggleEdit()">'+(editing?'Done':'Edit')+'</button>'
+    +'<button class="tbtn" onclick="exportData()">Export</button>'
+    +'<button class="tbtn" onclick="document.getElementById(\'imp\').click()">Import</button>'
+    +'</div>'
+    +'<div class="dayhead"><div><h2>'+d.title+'</h2><div class="sub">'+d.sub+'</div></div><div class="prog">'+dn+' / '+total+' done</div></div>';
+  if(editing)h+='<button class="tbtn" style="margin:0 3px 9px" onclick="toggleAdd()">+ Add a place</button>'+addForm(di);
+  h+='<div class="line">';
   stops.forEach(s=>{
     const dHome=s.lat?hav(HOME,{lat:s.lat,lng:s.lng}):null;
     const dNow=(state.geo&&s.lat)?hav(state.geo,{lat:s.lat,lng:s.lng}):null;
-    const dist=s.lat?`<span class="dist"><b>${km(dHome)}</b> from home${dNow!=null?` · <b>${km(dNow)}</b> now`:''}</span>`:'';
-    const flag=s.flag?`<span class="flag">${s.flag}</span>`:'';
-    const map=s.m?`<a class="lk" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.m+' Ho Chi Minh City')}" target="_blank" rel="noopener">Map</a>`:'';
-    const copy=s.addr?`<button class="lk" onclick="copyAddr(this,'${(s.addr||'').replace(/'/g,"\\'")}')">Copy address</button>`:'';
-    h+=`<div class="stop ${state.done[s.id]?'done':''} ${editing?'editing':''}" data-id="${s.id}" style="--z:${Z[s.z]}">
-      <div class="card">
-        <div class="top">
-          <button class="tick" aria-label="Done" onclick="toggleDone('${s.id}')"></button>
-          <div class="main">
-            <div class="hd" onclick="toggleOpen(this)">
-              <div class="nm"><span class="em">${s.e||'📍'}</span>${s.n}</div>
-              <div class="meta">
-                <span class="chip" style="background:${Z[s.z]}">${ZN[s.z]}</span>
-                ${s.t?`<span class="when">${s.t}</span>`:''}
-                ${flag}${dist}
-              </div>
-            </div>
-            <div class="body">
-              ${s.addr?`<div class="desc" style="margin-bottom:4px">${s.addr}</div>`:''}
-              <div class="desc">${s.d||''}</div>
-              <div class="acts">
-                ${map}${copy}
-                <button class="${priCls(s.pri)}" onclick="cyclePri('${s.id}')">${PRILBL[s.pri||'none']}</button>
-              </div>
-              <textarea class="note" placeholder="Add a comment…" oninput="setNote('${s.id}',this.value)">${s.note||''}</textarea>
-              <div class="editrow">
-                <button class="mini" onclick="move('${s.id}',-1)">↑</button>
-                <button class="mini" onclick="move('${s.id}',1)">↓</button>
-                <button class="mini del" onclick="del('${s.id}')">Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>`;
+    const bits=[];
+    if(s.t)bits.push('<span>'+s.t+'</span>');
+    if(dHome!=null)bits.push('<span><b>'+km(dHome)+'</b> from home'+(dNow!=null?' · <b>'+km(dNow)+'</b> now':'')+'</span>');
+    if(s.flag)bits.push('<span class="flag">'+s.flag+'</span>');
+    const meta=bits.length?'<div class="meta">'+bits.join('<span class="sep">·</span>')+'</div>':'';
+    const pdot=(s.pri&&s.pri!=='none')?'<span class="pdot" style="background:var(--'+s.pri+')"></span>':'';
+    const map=s.m?'<a class="lk" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.m+' Ho Chi Minh City')+'" target="_blank" rel="noopener">Map</a>':'';
+    const grabTxt=s.grab||s.addr;
+    const copy=grabTxt?'<button class="lk grab" onclick="copyText(this,\''+esc(grabTxt)+'\')">Copy for Grab</button>':'';
+    h+='<div class="stop '+(state.done[s.id]?'done':'')+' '+(editing?'editing':'')+'" data-id="'+s.id+'" style="--z:'+Z[s.z]+'">'
+      +'<div class="card"><div class="top">'
+      +'<button class="tick" aria-label="Done" onclick="toggleDone(\''+s.id+'\')"></button>'
+      +'<div class="main">'
+      +'<div class="hd" onclick="toggleOpen(this)"><div class="nm"><span class="em">'+(s.e||'📍')+'</span><span class="txt">'+s.n+'</span>'+pdot+'</div>'+meta+'</div>'
+      +'<div class="body">'
+      +(s.addr?'<div class="addr">'+s.addr+'</div>':'')
+      +'<div class="desc">'+(s.d||'')+'</div>'
+      +'<div class="acts">'+map+copy+'<button class="'+priCls(s.pri)+'" onclick="cyclePri(\''+s.id+'\')">'+PRILBL[s.pri||'none']+'</button></div>'
+      +'<textarea class="note" placeholder="Add a comment…" oninput="setNote(\''+s.id+'\',this.value)">'+(s.note||'')+'</textarea>'
+      +'<div class="editrow"><button class="mini" onclick="move(\''+s.id+'\',-1)">↑ Up</button><button class="mini" onclick="move(\''+s.id+'\',1)">↓ Down</button><button class="mini del" onclick="del(\''+s.id+'\')">Delete</button></div>'
+      +'</div></div></div></div>';
   });
-  h+=`</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">`;
+  h+='</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">';
   setPanel(h);
 }
 
 function addForm(di){
-  return `<div class="addform ${addOpen?'on':''}">
-    <input id="a_n" placeholder="Place name">
-    <div class="g">
-      <select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select>
-      <input id="a_t" placeholder="Time (opt)">
-    </div>
-    <input id="a_addr" placeholder="Vietnamese address (opt)">
-    <textarea id="a_note" placeholder="Note (opt)"></textarea>
-    <button class="tbtn" onclick="addPlace(${di})">Add to ${state.data.days[di].tab}</button>
-  </div>`;
+  return '<div class="addform '+(addOpen?'on':'')+'">'
+    +'<input id="a_n" placeholder="Place name">'
+    +'<div class="g"><select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select><input id="a_t" placeholder="Time (opt)"></div>'
+    +'<input id="a_addr" placeholder="Vietnamese address (opt)">'
+    +'<textarea id="a_note" placeholder="Note (opt)"></textarea>'
+    +'<button class="tbtn" onclick="addPlace('+di+')">Add to '+state.data.days[di].tab+'</button></div>';
 }
 
 function renderBudget(){
   const totalV=state.spend.reduce((a,e)=>a+(e.cur==='SGD'?e.amt*state.rate:e.amt),0);
-  let rows=state.spend.map((e,i)=>`<div class="row-e"><span>${e.label||'—'}</span><span>${e.cur==='SGD'?'S$'+e.amt:'₫'+Number(e.amt).toLocaleString()} <span class="x" onclick="delExp(${i})">✕</span></span></div>`).join('');
-  const h=`<div class="dayhead"><div><h2>Budget</h2><div class="sub">Log spend as you go</div></div></div>
-  <div class="panelbox">
-    <div class="exp">
-      <input class="lbl" id="e_l" placeholder="What?">
-      <input class="amt" id="e_a" type="number" inputmode="decimal" placeholder="Amount">
-      <select id="e_c" style="border:1px solid var(--line);border-radius:8px;padding:7px 6px;font-size:13px;background:#FCFBF6"><option>VND</option><option>SGD</option></select>
-      <button class="tbtn" onclick="addExp()">Add</button>
-    </div>
-    ${rows||'<div class="muted" style="margin:6px 0 0">Nothing logged yet.</div>'}
-    <div class="total"><span>Total</span><span class="big">₫${Math.round(totalV).toLocaleString()}</span></div>
-    <div class="total" style="font-weight:600"><span></span><span>≈ S$${(totalV/state.rate).toFixed(2)}</span></div>
-    <div class="rate">Rate: 1 SGD ≈ ₫<input id="e_r" type="number" value="${state.rate}" onchange="setRate(this.value)"></div>
-  </div>`;
+  let rows=state.spend.map((e,i)=>'<div class="row-e"><span>'+(e.label||'—')+'</span><span>'+(e.cur==='SGD'?'S$'+e.amt:'₫'+Number(e.amt).toLocaleString())+' <span class="x" onclick="delExp('+i+')">✕</span></span></div>').join('');
+  const h='<div class="dayhead"><div><h2>Budget</h2><div class="sub">Log spend as you go</div></div></div>'
+  +'<div class="panelbox">'
+  +'<div class="exp"><input class="lbl" id="e_l" placeholder="What?"><input class="amt" id="e_a" type="number" inputmode="decimal" placeholder="Amount"><select id="e_c"><option>VND</option><option>SGD</option></select><button class="tbtn" onclick="addExp()">Add</button></div>'
+  +(rows||'<div class="muted">Nothing logged yet.</div>')
+  +'<div class="total"><span>Total</span><span class="big">₫'+Math.round(totalV).toLocaleString()+'</span></div>'
+  +'<div class="total" style="font-weight:600;font-size:13px;color:var(--soft)"><span></span><span>≈ S$'+(totalV/state.rate).toFixed(2)+'</span></div>'
+  +'<div class="rate">Rate: 1 SGD ≈ ₫<input id="e_r" type="number" value="'+state.rate+'" onchange="setRate(this.value)"></div>'
+  +'</div>';
   setPanel(h);
 }
 
 function renderShots(){
-  let rows=state.data.photos.map(p=>`<div class="shot ${state.photosDone[p.id]?'done':''}" onclick="togglePhoto('${p.id}')"><span class="b"></span><span class="t">${p.t}</span></div>`).join('');
+  let rows=state.data.photos.map(p=>'<div class="shot '+(state.photosDone[p.id]?'done':'')+'" onclick="togglePhoto(\''+p.id+'\')"><span class="b"></span><span class="t">'+p.t+'</span></div>').join('');
   const dn=state.data.photos.filter(p=>state.photosDone[p.id]).length;
-  const h=`<div class="dayhead"><div><h2>Shot list</h2><div class="sub">Content to capture</div></div><div class="prog">${dn} / ${state.data.photos.length}</div></div><div class="panelbox">${rows}</div>`;
+  const h='<div class="dayhead"><div><h2>Shot list</h2><div class="sub">Content to capture</div></div><div class="prog">'+dn+' / '+state.data.photos.length+'</div></div><div class="panelbox">'+rows+'</div>';
   setPanel(h);
 }
 
-function setPanel(html){panelsEl.innerHTML=`<section class="day on">${html}</section>`;}
+function setPanel(html){panelsEl.innerHTML='<section class="day on">'+html+'</section>';}
 
-// actions
 function setSort(s){sort=s;render();}
 function toggleEdit(){editing=!editing;addOpen=false;render();}
 function toggleAdd(){addOpen=!addOpen;render();}
@@ -403,13 +444,13 @@ function toggleOpen(hd){hd.closest('.stop').classList.toggle('open');}
 function toggleDone(id){state.done[id]=!state.done[id];persist();render();}
 function cyclePri(id){const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();render();}
 function setNote(id,v){const s=findStop(id);if(s){s.note=v;persist();}}
-function move(id,dir){const d=state.data.days[cur];const i=d.stops.findIndex(s=>s.id===id);const j=i+dir;if(i<0||j<0||j>=d.stops.length)return;[d.stops[i],d.stops[j]]=[d.stops[j],d.stops[i]];sort='plan';persist();render();}
+function move(id,dir){const d=state.data.days[cur];const i=d.stops.findIndex(s=>s.id===id);const j=i+dir;if(i<0||j<0||j>=d.stops.length)return;const t=d.stops[i];d.stops[i]=d.stops[j];d.stops[j]=t;sort='plan';persist();render();}
 function del(id){const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
-function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Name needed');return;}const stop={id:'u'+Date.now(),n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!stop.addr)delete stop.addr;state.data.days[di].stops.push(stop);addOpen=false;persist();render();toast('Added');}
+function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Name needed');return;}const stop={id:'u'+Date.now(),n:n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!stop.addr)delete stop.addr;state.data.days[di].stops.push(stop);addOpen=false;persist();render();toast('Added');}
 function findStop(id){for(const d of state.data.days){const s=d.stops.find(x=>x.id===id);if(s)return s;}return null;}
 
-function copyAddr(btn,txt){const t=txt.replace(/\\'/g,"'");const done=()=>{const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>fallbackCopy(t,done));}else fallbackCopy(t,done);}
-function fallbackCopy(t,cb){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb&&cb();}
+function copyText(btn,txt){const t=txt.replace(/\\'/g,"'");const done=()=>{const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=o,1200);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>fb(t,done));}else fb(t,done);}
+function fb(t,cb){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);cb&&cb();}
 
 function locate(){if(!navigator.geolocation){toast('No GPS available');return;}toast('Locating…');navigator.geolocation.getCurrentPosition(p=>{state.geo={lat:p.coords.latitude,lng:p.coords.longitude};sort='near';render();toast('Located — sorted by nearest');},()=>toast('Location denied'),{enableHighAccuracy:true,timeout:8000});}
 
@@ -423,7 +464,7 @@ function importData(file){if(!file)return;const r=new FileReader();r.onload=()=>
 
 function todayIndex(){const iso=new Date().toISOString().slice(0,10);const i=state.data.days.findIndex(d=>d.iso===iso);return i<0?0:i;}
 
-(async function(){await restore();buildTabs();cur=todayIndex();render();})();
+(async function(){await restore();setStatus();buildTabs();cur=todayIndex();render();})();
 </script>
 </body>
 </html>
