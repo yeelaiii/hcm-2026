@@ -97,6 +97,15 @@
   .sm{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:3px;font-size:12px;color:var(--sec);font-variant-numeric:tabular-nums}
   .sm b{color:var(--label);font-weight:600}
   .notepv{font-size:12.5px;color:var(--sec);font-style:italic;margin-top:4px;line-height:1.4;overflow-wrap:anywhere}
+  .pk{font-size:10px;font-weight:700;padding:1px 8px;border-radius:20px;color:#fff}
+  .pk.pke{background:var(--tint)}
+  .pk.pka{background:var(--d3)}
+  .flbl{font-size:12.5px;font-weight:600;color:var(--sec)}
+  .own{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .ownlbl{font-size:12.5px;color:var(--sec)}
+  .owntg{font-size:12px;font-weight:600;padding:6px 13px;border-radius:8px;border:1px solid var(--sep);background:#fff;color:var(--sec)}
+  .owntg.e.on{background:var(--tint);color:#fff;border-color:var(--tint)}
+  .owntg.a.on{background:var(--d3);color:#fff;border-color:var(--d3)}
   .flag{font-size:10.5px;font-weight:600;color:#8a6a12;background:#FBF3D6;padding:1px 8px;border-radius:20px}
   .nextbadge{font-size:10px;font-weight:700;color:#fff;background:var(--tint);padding:1px 8px;border-radius:20px}
   .check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.8px solid var(--sep);position:relative;background:none}
@@ -270,8 +279,8 @@ const DEFAULT={rate:19000,days:[
  photos:[{id:'p0',t:'Pink Church facade (Tân Định)'},{id:'p1',t:'Capybaras at Kapi Café'},{id:'p2',t:'MonoBooth photo strip'},{id:'p3',t:'Bui Vien at night'},{id:'p4',t:'Skyline from Chill Skybar'},{id:'p5',t:'White dunes at sunrise'},{id:'p6',t:'The Cafe Apartment building'},{id:'p7',t:'Fit pic in a concept store'}]
 };
 
-let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{},t:0};
-let cur=0,view='trip',sort='plan',editing=false,addOpen=false,mapObj=null;
+let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{},t:0,seed:0};
+let cur=0,view='trip',sort='plan',editing=false,addOpen=false,mapObj=null,pickFilter='all';
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1500);}
@@ -285,8 +294,23 @@ function isToday(iso){return new Date().toISOString().slice(0,10)===iso;}
 function setStatus(){const el=document.getElementById('status');const start=new Date('2026-09-10T00:00:00'),end=new Date('2026-09-15T23:59:59'),now=new Date(),D=864e5;if(now<start){const d=Math.ceil((start-now)/D);el.textContent=d+' day'+(d===1?'':'s')+' to go';}else if(now>end)el.textContent='Trip complete';else el.textContent='Day '+(Math.floor((now-start)/D)+1)+' of 6';}
 
 /* ---- storage + sync ---- */
-function snap(){return {data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate,t:state.t};}
-function applyState(o){if(!o)return;state.data=o.data||state.data;state.spend=o.spend||[];state.done=o.done||{};state.photosDone=o.photosDone||{};state.rate=o.rate||state.rate;if(o.t!=null)state.t=o.t;}
+function snap(){return {data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate,t:state.t,seed:state.seed};}
+function applyState(o){if(!o)return;state.data=o.data||state.data;state.spend=o.spend||[];state.done=o.done||{};state.photosDone=o.photosDone||{};state.rate=o.rate||state.rate;if(o.t!=null)state.t=o.t;if(o.seed!=null)state.seed=o.seed;}
+function mergeSeed(){
+  if((state.seed||0)>=2)return false;
+  const has=id=>state.data.days.some(d=>d.stops.some(s=>s.id===id));
+  const day=k=>state.data.days.find(d=>d.key===k);
+  const monNew=[
+    {id:'m_aastu',t:'',e:'👕',n:'AASTU Flagship',z:'d3',lat:10.7900,lng:106.6785,addr:'118/12 Trần Quang Diệu, Nhiêu Lộc, Quận 3',m:'AASTU Flagship Tran Quang Dieu',pri:'want',own:{e:true},d:'5.0-rated flagship, bags + accessories. Opens 9:30.'},
+    {id:'m_hardy',t:'',e:'👕',n:'Hardy Boys',z:'d3',lat:10.7889,lng:106.6773,addr:'386/7 Lê Văn Sỹ, Nhiêu Lộc, Quận 3',m:'Hardy Boys Le Van Sy',pri:'want',own:{e:true},d:'Minimal + versatile, Corteiz-ish. 5.0.'},
+    {id:'m_whose',t:'',e:'👕',n:'Whose Studio',z:'d3',lat:10.7891,lng:106.6773,addr:'386/15 Lê Văn Sỹ, Nhiêu Lộc, Quận 3',m:'Whose Studio Le Van Sy',pri:'want',own:{e:true},d:'3 floors, TikTok-viral. Cheap denim upstairs.'},
+    {id:'m_mozaic',t:'',e:'👕',n:'Mozaic Space',z:'d3',lat:10.7855,lng:106.6793,addr:'31/23 Lê Văn Sỹ, Nhiêu Lộc, Quận 3',m:'Mozaic Space Le Van Sy',pri:'want',own:{e:true},d:'Concept store of niche VN brands. 4.8.'}
+  ].filter(st=>!has(st.id));
+  const md=day('mon');if(md){const i=md.stops.findIndex(s=>s.id==='m4');if(i>=0)md.stops.splice(i+1,0,...monNew);else md.stops.push(...monNew);}
+  const sd=day('sat');if(sd&&!has('s_mav')){const st={id:'s_mav',t:'',e:'👕',n:'Maverik Studio',z:'thao',lat:10.8030,lng:106.7295,addr:'2 Nguyễn Bá Huân, An Khánh, Thủ Đức',m:'Maverik Studio Nguyen Ba Huan',pri:'want',own:{e:true},d:'Minimal menswear, near Crust in Thảo Điền.'};const i=sd.stops.findIndex(s=>s.id==='s1');if(i>=0)sd.stops.splice(i+1,0,st);else sd.stops.push(st);}
+  ['f3','f10','m2'].forEach(id=>{const s=findStop(id);if(s){s.own=s.own||{};s.own.e=true;}});
+  state.seed=2;return true;
+}
 let db=null,muteUntil=0,wTimer=null;
 function persist(){state.t=Date.now();try{localStorage.setItem('hcmc26',JSON.stringify(snap()));}catch(e){}cloudSave();}
 function loadLocal(){try{const r=localStorage.getItem('hcmc26');if(r)applyState(JSON.parse(r));}catch(e){}}
@@ -305,7 +329,7 @@ function syncInit(){
       if(v.t&&state.t&&v.t<state.t){muteUntil=Date.now()+2500;db.set(snap()).catch(()=>{});syncBadge(true);return;}
       const ae=document.activeElement;
       if(ae&&ae.classList&&ae.classList.contains('note'))return;
-      applyState(v);render();syncBadge(true);
+      applyState(v);if(mergeSeed()){muteUntil=Date.now()+2500;db.set(snap()).catch(()=>{});}render();syncBadge(true);
     },()=>syncBadge(false));
   }catch(e){syncBadge(false);}
 }
@@ -360,16 +384,20 @@ function initDayMap(stops){
 }
 
 function renderDay(di){
-  const d=state.data.days[di],stops=sortStops(d.stops);
+  const d=state.data.days[di];let stops=sortStops(d.stops);
+  if(pickFilter!=='all')stops=stops.filter(s=>s.own&&s.own[pickFilter]);
   const total=d.stops.length,dn=d.stops.filter(s=>state.done[s.id]).length,nextId=nextStopId(d);
   let h='<div class="dh"><div><h2>'+d.title+'</h2><div class="sub">'+d.sub+'</div></div><div class="wx">'+wxHTML(d.iso)+'</div></div>';
   h+='<div class="ctl"><div class="seg"><button aria-pressed="'+(sort==='plan')+'" onclick="setSort(\'plan\')">Plan</button><button aria-pressed="'+(sort==='near')+'" onclick="setSort(\'near\')">Nearest</button><button aria-pressed="'+(sort==='pri')+'" onclick="setSort(\'pri\')">Priority</button></div><button class="icobtn" onclick="locate()">'+(state.geo?'Located':'Locate')+'</button><span class="spacer"></span><span class="prog">'+dn+'/'+total+'</span><button class="icobtn" aria-pressed="'+editing+'" onclick="toggleEdit()">'+(editing?'Done':'Edit')+'</button></div>';
+  h+='<div class="ctl"><span class="flbl">Show</span><div class="seg"><button aria-pressed="'+(pickFilter==='all')+'" onclick="setFilter(\'all\')">All</button><button aria-pressed="'+(pickFilter==='e')+'" onclick="setFilter(\'e\')">Elijah\u2019s</button><button aria-pressed="'+(pickFilter==='a')+'" onclick="setFilter(\'a\')">Ashley\u2019s</button></div></div>';
   if(editing)h+='<div class="ctl"><button class="icobtn" onclick="toggleAdd()">+ Add place</button><button class="icobtn" onclick="exportData()">Export</button><button class="icobtn" onclick="document.getElementById(\'imp\').click()">Import</button></div>'+(addOpen?'<div class="group"><div class="addform">'+addFields(di)+'</div></div>':'');
   h+=routeMap(stops)+'<div class="group">';
   stops.forEach(s=>{
     const dHome=s.lat?hav(HOME,{lat:s.lat,lng:s.lng}):null,dNow=(state.geo&&s.lat)?hav(state.geo,{lat:s.lat,lng:s.lng}):null;
     const left=[];if(s.t)left.push(s.t);if(dHome!=null)left.push('<b>'+km(dHome)+'</b>'+(dNow!=null?' · <b>'+km(dNow)+'</b> now':' from home'));
-    let sm='';if(left.length||s.flag||s.id===nextId){sm='<div class="sm">'+(left.length?'<span>'+left.join(' · ')+'</span>':'')+(s.flag?'<span class="flag">'+s.flag+'</span>':'')+(s.id===nextId?'<span class="nextbadge">Next up</span>':'')+'</div>';}
+    const pills=[];if(s.flag)pills.push('<span class="flag">'+s.flag+'</span>');if(s.own&&s.own.e)pills.push('<span class="pk pke">Elijah</span>');if(s.own&&s.own.a)pills.push('<span class="pk pka">Ashley</span>');if(s.id===nextId)pills.push('<span class="nextbadge">Next up</span>');
+    const leftHtml=left.length?'<span>'+left.join(' · ')+'</span>':'';
+    let sm='';if(leftHtml||pills.length){sm='<div class="sm">'+leftHtml+pills.join('')+'</div>';}
     const zc=ZC[s.z];
     const map=s.m?'<a class="lk" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.m+' Ho Chi Minh City')+'" target="_blank" rel="noopener">Open in Maps</a>':'';
     const grabTxt=s.grab||s.addr,copy=grabTxt?'<button class="lk grab" onclick="copyText(this,\''+esc(grabTxt)+'\')">Copy for Grab</button>':'';
@@ -379,6 +407,7 @@ function renderDay(di){
       +'<button class="check" aria-label="Mark done" onclick="toggleDone(event,\''+s.id+'\')"></button></div>'
       +'<div class="body">'+(s.addr?'<div class="addr">'+s.addr+'</div>':'')+'<div class="desc">'+(s.d||'')+'</div>'
       +'<div class="acts">'+map+copy+'<button class="pri '+(s.pri||'none')+'" onclick="cyclePri(event,\''+s.id+'\')">'+PRILBL[s.pri||'none']+'</button></div>'
+      +'<div class="own"><span class="ownlbl">Whose pick?</span><button class="owntg e'+((s.own&&s.own.e)?' on':'')+'" onclick="toggleOwn(event,\''+s.id+'\',\'e\')">Elijah</button><button class="owntg a'+((s.own&&s.own.a)?' on':'')+'" onclick="toggleOwn(event,\''+s.id+'\',\'a\')">Ashley</button></div>'
       +'<textarea class="note" placeholder="Add a note…" onclick="event.stopPropagation()" oninput="setNote(\''+s.id+'\',this.value)">'+htmlesc(s.note)+'</textarea>'
       +'<div class="editrow"><button class="mini" onclick="move(event,\''+s.id+'\',-1)">Move up</button><button class="mini" onclick="move(event,\''+s.id+'\',1)">Move down</button><button class="mini del" onclick="del(event,\''+s.id+'\')">Remove</button></div></div>';
   });
@@ -400,6 +429,8 @@ function renderShots(){
 }
 
 function setSort(s){sort=s;render();}
+function setFilter(f){pickFilter=f;render();}
+function toggleOwn(ev,id,who){ev.stopPropagation();const s=findStop(id);if(!s)return;s.own=s.own||{};s.own[who]=!s.own[who];if(!s.own.e&&!s.own.a)delete s.own;persist();render();}
 function toggleEdit(){editing=!editing;addOpen=false;render();}
 function toggleAdd(){addOpen=!addOpen;render();}
 function updateProg(){const d=state.data.days[cur];const dn=d.stops.filter(s=>state.done[s.id]).length;const el=document.querySelector('.prog');if(el)el.textContent=dn+'/'+d.stops.length;}
@@ -426,7 +457,7 @@ document.getElementById('ic_pl2').innerHTML=svg('plane',13,'#2E6FE6');
 document.getElementById('ic_home').innerHTML=svg('pin',18,'#2E6FE6');
 document.getElementById('nv1').innerHTML=svg('nlist',20);document.getElementById('nv2').innerHTML=svg('nwallet',20);document.getElementById('nv3').innerHTML=svg('ncam',20);
 
-(async function(){loadLocal();await loadSeed();setStatus();buildDays();cur=todayIndex();render();syncInit();await loadWx();render();})();
+(async function(){loadLocal();await loadSeed();if(mergeSeed())persist();setStatus();buildDays();cur=todayIndex();render();syncInit();await loadWx();render();})();
 </script>
 </body>
 </html>
