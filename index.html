@@ -96,6 +96,7 @@
   .nm{font-size:15.5px;font-weight:600;line-height:1.3}
   .sm{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:3px;font-size:12px;color:var(--sec);font-variant-numeric:tabular-nums}
   .sm b{color:var(--label);font-weight:600}
+  .notepv{font-size:12.5px;color:var(--sec);font-style:italic;margin-top:4px;line-height:1.4;overflow-wrap:anywhere}
   .flag{font-size:10.5px;font-weight:600;color:#8a6a12;background:#FBF3D6;padding:1px 8px;border-radius:20px}
   .nextbadge{font-size:10px;font-weight:700;color:#fff;background:var(--tint);padding:1px 8px;border-radius:20px}
   .check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.8px solid var(--sep);position:relative;background:none}
@@ -278,7 +279,7 @@ const DEFAULT={rate:19000,days:[
  photos:[{id:'p0',t:'Pink Church facade (Tân Định)'},{id:'p1',t:'Capybaras at Kapi Café'},{id:'p2',t:'MonoBooth photo strip'},{id:'p3',t:'Bui Vien at night'},{id:'p4',t:'Skyline from Chill Skybar'},{id:'p5',t:'White dunes at sunrise'},{id:'p6',t:'The Cafe Apartment building'},{id:'p7',t:'Fit pic in a concept store'}]
 };
 
-let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{}};
+let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{},t:0};
 let cur=0,view='trip',sort='plan',editing=false,addOpen=false,mapObj=null;
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
@@ -286,16 +287,17 @@ function toast(t){const el=document.getElementById('toast');el.textContent=t;el.
 function hav(a,b){if(!a||!b)return null;const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180,la1=a.lat*Math.PI/180,la2=b.lat*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function km(d){return d==null?'':(d<1?Math.round(d*1000)+' m':d.toFixed(1)+' km');}
 function esc(s){return (s||'').replace(/'/g,"\\'");}
+function htmlesc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function tmin(t){const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?(+m[1])*60+(+m[2]):null;}
 function isToday(iso){return new Date().toISOString().slice(0,10)===iso;}
 
 function setStatus(){const el=document.getElementById('status');const start=new Date('2026-09-10T00:00:00'),end=new Date('2026-09-15T23:59:59'),now=new Date(),D=864e5;if(now<start){const d=Math.ceil((start-now)/D);el.textContent=d+' day'+(d===1?'':'s')+' to go';}else if(now>end)el.textContent='Trip complete';else el.textContent='Day '+(Math.floor((now-start)/D)+1)+' of 6';}
 
 /* ---- storage + sync ---- */
-function snap(){return {data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate};}
-function applyState(o){if(!o)return;state.data=o.data||state.data;state.spend=o.spend||[];state.done=o.done||{};state.photosDone=o.photosDone||{};state.rate=o.rate||state.rate;}
+function snap(){return {data:state.data,spend:state.spend,done:state.done,photosDone:state.photosDone,rate:state.rate,t:state.t};}
+function applyState(o){if(!o)return;state.data=o.data||state.data;state.spend=o.spend||[];state.done=o.done||{};state.photosDone=o.photosDone||{};state.rate=o.rate||state.rate;if(o.t!=null)state.t=o.t;}
 let db=null,muteUntil=0,wTimer=null;
-function persist(){try{localStorage.setItem('hcmc26',JSON.stringify(snap()));}catch(e){}cloudSave();}
+function persist(){state.t=Date.now();try{localStorage.setItem('hcmc26',JSON.stringify(snap()));}catch(e){}cloudSave();}
 function loadLocal(){try{const r=localStorage.getItem('hcmc26');if(r)applyState(JSON.parse(r));}catch(e){}}
 async function loadSeed(){try{const resp=await fetch('./trip-data.json',{cache:'no-store'});if(resp.ok){const o=await resp.json();applyState(o.data?o:{data:o});}}catch(e){}}
 function syncBadge(on){const el=document.getElementById('sync');const f=document.getElementById('foot');if(on){el.textContent='Synced';el.className='pill sync on';f.textContent='Synced across devices';}else{el.textContent='This device';el.className='pill sync';f.textContent='Saving on this device';}}
@@ -309,6 +311,7 @@ function syncInit(){
       const v=s.val();
       if(v===null){db.set(snap()).catch(()=>{});syncBadge(true);return;}
       if(Date.now()<muteUntil){syncBadge(true);return;}
+      if(v.t&&state.t&&v.t<state.t){muteUntil=Date.now()+2500;db.set(snap()).catch(()=>{});syncBadge(true);return;}
       const ae=document.activeElement;
       if(ae&&ae.classList&&ae.classList.contains('note'))return;
       applyState(v);render();syncBadge(true);
@@ -381,11 +384,11 @@ function renderDay(di){
     const grabTxt=s.grab||s.addr,copy=grabTxt?'<button class="lk grab" onclick="copyText(this,\''+esc(grabTxt)+'\')">Copy for Grab</button>':'';
     h+='<div class="stoprow '+(state.done[s.id]?'done':'')+(s.id===nextId?' next':'')+(editing?' ed':'')+'" onclick="this.classList.toggle(\'open\')" data-id="'+s.id+'">'
       +'<div class="ico" style="background:'+zc+'1F">'+svg(iconFor(s),18,zc)+'</div>'
-      +'<div class="main"><div class="nm">'+s.n+'</div>'+sm+'</div>'
+      +'<div class="main"><div class="nm">'+s.n+'</div>'+sm+'<div class="notepv" data-note="'+s.id+'"'+(s.note?'':' style="display:none"')+'>'+htmlesc(s.note)+'</div></div>'
       +'<button class="check" aria-label="Mark done" onclick="toggleDone(event,\''+s.id+'\')"></button></div>'
       +'<div class="body">'+(s.addr?'<div class="addr">'+s.addr+'</div>':'')+'<div class="desc">'+(s.d||'')+'</div>'
       +'<div class="acts">'+map+copy+'<button class="pri '+(s.pri||'none')+'" onclick="cyclePri(event,\''+s.id+'\')">'+PRILBL[s.pri||'none']+'</button></div>'
-      +'<textarea class="note" placeholder="Add a note…" onclick="event.stopPropagation()" oninput="setNote(\''+s.id+'\',this.value)">'+(s.note||'')+'</textarea>'
+      +'<textarea class="note" placeholder="Add a note…" onclick="event.stopPropagation()" oninput="setNote(\''+s.id+'\',this.value)">'+htmlesc(s.note)+'</textarea>'
       +'<div class="editrow"><button class="mini" onclick="move(event,\''+s.id+'\',-1)">Move up</button><button class="mini" onclick="move(event,\''+s.id+'\',1)">Move down</button><button class="mini del" onclick="del(event,\''+s.id+'\')">Remove</button></div></div>';
   });
   h+='</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">';
@@ -411,7 +414,7 @@ function toggleAdd(){addOpen=!addOpen;render();}
 function updateProg(){const d=state.data.days[cur];const dn=d.stops.filter(s=>state.done[s.id]).length;const el=document.querySelector('.prog');if(el)el.textContent=dn+'/'+d.stops.length;}
 function toggleDone(ev,id){ev.stopPropagation();state.done[id]=!state.done[id];persist();const row=document.querySelector('.stoprow[data-id="'+id+'"]');if(row)row.classList.toggle('done',!!state.done[id]);updateProg();}
 function cyclePri(ev,id){ev.stopPropagation();const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();if(sort==='pri'){render();return;}const btn=ev.target;btn.className='pri '+(s.pri||'none');btn.textContent=PRILBL[s.pri||'none'];}
-function setNote(id,v){const s=findStop(id);if(s){s.note=v;persist();}}
+function setNote(id,v){const s=findStop(id);if(!s)return;s.note=v;persist();const pv=document.querySelector('.notepv[data-note="'+id+'"]');if(pv){pv.textContent=v;pv.style.display=v?'':'none';}}
 function move(ev,id,dir){ev.stopPropagation();const d=state.data.days[cur],i=d.stops.findIndex(s=>s.id===id),j=i+dir;if(i<0||j<0||j>=d.stops.length)return;const t=d.stops[i];d.stops[i]=d.stops[j];d.stops[j]=t;sort='plan';persist();render();}
 function del(ev,id){ev.stopPropagation();const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
 function addPlace(di){const n=document.getElementById('a_n').value.trim();if(!n){toast('Add a name');return;}const st={id:'u'+Date.now(),n:n,z:document.getElementById('a_z').value,t:document.getElementById('a_t').value.trim(),addr:document.getElementById('a_addr').value.trim(),note:document.getElementById('a_note').value.trim(),e:'📍',m:n};if(!st.addr)delete st.addr;state.data.days[di].stops.push(st);addOpen=false;persist();render();toast('Added');}
