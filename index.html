@@ -7,6 +7,8 @@
 <title>HCMC '26</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
   :root{
     --bg:#F2F2F5;--card:#FFF;--label:#1A1A1C;--sec:#6E6E76;--ter:#A0A0A8;--sep:#E6E6EB;--sep2:#EFEFF3;
@@ -84,7 +86,10 @@
   .route{padding:0}
   .route .rb{display:flex;justify-content:space-between;align-items:center;padding:11px 14px 8px}
   .route .rb .lbl{font-size:13px;font-weight:600}
-  .route svg.map{width:100%;height:148px;background:#FAFAFB;display:block}
+  .lmap{width:100%;height:220px;background:#E9E9EE}
+  .lmap .num{width:26px;height:26px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font:700 12px -apple-system,system-ui,sans-serif;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+  .leaflet-container{font-family:inherit}
+  .leaflet-popup-content{font-size:13px}
 
   .ico{flex:0 0 auto;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center}
   .main{flex:1;min-width:0}
@@ -197,7 +202,16 @@
 
 <script>
 /* ============ PASTE FIREBASE CONFIG BELOW TO SYNC ACROSS PHONES ============ */
-const FIREBASE_CONFIG = { apiKey:"", authDomain:"", databaseURL:"", projectId:"" };
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAW6awaWA2xWWKlnar3xhgJ_EvGfLQePsU",
+  authDomain: "hcm-2026.firebaseapp.com",
+  databaseURL: "https://hcm-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "hcm-2026",
+  storageBucket: "hcm-2026.firebasestorage.app",
+  messagingSenderId: "718918931626",
+  appId: "1:718918931626:web:4b05786f2bf8d596f72cd3",
+  measurementId: "G-4LHKN56BDR"
+};
 /* Leave blank = this-device-only. Fill in = auto-sync everywhere. */
 
 const HOME={lat:10.76475,lng:106.69125};
@@ -265,7 +279,7 @@ const DEFAULT={rate:19000,days:[
 };
 
 let state={data:clone(DEFAULT),spend:[],done:{},photosDone:{},rate:DEFAULT.rate,geo:null,wx:{}};
-let cur=0,view='trip',sort='plan',editing=false,addOpen=false;
+let cur=0,view='trip',sort='plan',editing=false,addOpen=false,mapObj=null;
 
 function clone(o){return JSON.parse(JSON.stringify(o));}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('on'),1500);}
@@ -325,20 +339,30 @@ function render(){
   document.getElementById('tripinfo').style.display=view==='trip'?'':'none';
   daysEl.style.display=view==='trip'?'flex':'none';
   document.querySelectorAll('.dchip').forEach((t,i)=>t.setAttribute('aria-selected',i===cur?'true':'false'));
-  if(view==='trip')renderDay(cur);else if(view==='budget')renderBudget();else renderShots();
+  if(view==='trip'){renderDay(cur);}else{try{if(mapObj){mapObj.remove();mapObj=null;}}catch(e){}if(view==='budget')renderBudget();else renderShots();}
 }
 
 function routeMap(stops){
-  const pts=stops.filter(s=>s.lat);if(pts.length<2)return '';
-  const W=560,H=148,pad=24;
-  const las=pts.map(p=>p.lat),lns=pts.map(p=>p.lng);
-  const laMin=Math.min(...las),laMax=Math.max(...las),lnMin=Math.min(...lns),lnMax=Math.max(...lns);
-  const sLa=(laMax-laMin)||1e-4,sLn=(lnMax-lnMin)||1e-4;
-  const X=p=>pad+((p.lng-lnMin)/sLn)*(W-2*pad),Y=p=>H-pad-((p.lat-laMin)/sLa)*(H-2*pad);
-  const poly=pts.map(p=>X(p).toFixed(0)+','+Y(p).toFixed(0)).join(' ');
-  const dots=pts.map((p,i)=>'<circle cx="'+X(p).toFixed(0)+'" cy="'+Y(p).toFixed(0)+'" r="9" fill="'+ZC[p.z]+'"/><text x="'+X(p).toFixed(0)+'" y="'+(Y(p)+3.5).toFixed(0)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">'+(i+1)+'</text>').join('');
+  const pts=stops.filter(s=>s.lat);if(pts.length<1)return '';
   const dir='https://www.google.com/maps/dir/?api=1&origin='+HOME.lat+','+HOME.lng+'&destination='+pts[pts.length-1].lat+','+pts[pts.length-1].lng+'&waypoints='+pts.slice(0,-1).map(p=>p.lat+','+p.lng).join('|')+'&travelmode=driving';
-  return '<div class="group route"><div class="rb"><span class="lbl">Route</span><a class="lk" href="'+dir+'" target="_blank" rel="noopener">Open in Maps</a></div><svg class="map" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet"><polyline points="'+poly+'" fill="none" stroke="#CDCDD6" stroke-width="2" stroke-dasharray="4 4"/>'+dots+'</svg></div>';
+  return '<div class="group route"><div class="rb"><span class="lbl">Route · '+pts.length+' stops</span><a class="lk" href="'+dir+'" target="_blank" rel="noopener">Directions</a></div><div class="lmap" id="daymap"></div></div>';
+}
+function initDayMap(stops){
+  const pts=stops.filter(s=>s.lat);const el=document.getElementById('daymap');
+  if(!el||!pts.length||typeof L==='undefined')return;
+  try{if(mapObj){mapObj.remove();mapObj=null;}}catch(e){}
+  mapObj=L.map(el,{zoomControl:true,scrollWheelZoom:false,attributionControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(mapObj);
+  const lls=[];
+  pts.forEach((p,i)=>{const ll=[p.lat,p.lng];lls.push(ll);
+    const ic=L.divIcon({className:'',iconSize:[26,26],iconAnchor:[13,13],html:'<div class="num" style="background:'+ZC[p.z]+'">'+(i+1)+'</div>'});
+    L.marker(ll,{icon:ic}).addTo(mapObj)
+      .bindPopup('<b>'+(i+1)+'. '+p.n+'</b><br><a href="https://www.google.com/maps/search/?api=1&query='+p.lat+','+p.lng+'" target="_blank" rel="noopener">Open in Maps</a>');
+  });
+  if(lls.length>1)L.polyline(lls,{color:'#2E6FE6',weight:3,opacity:.55,dashArray:'6 7'}).addTo(mapObj);
+  L.circleMarker([HOME.lat,HOME.lng],{radius:6,color:'#fff',weight:2,fillColor:'#1A1A1C',fillOpacity:1}).addTo(mapObj).bindTooltip('Home base');
+  mapObj.fitBounds(L.latLngBounds(lls.concat([[HOME.lat,HOME.lng]])).pad(0.18));
+  setTimeout(()=>{try{mapObj.invalidateSize();}catch(e){}},150);
 }
 
 function renderDay(di){
@@ -366,6 +390,7 @@ function renderDay(di){
   });
   h+='</div><input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(this.files[0])">';
   panelsEl.innerHTML='<section>'+h+'</section>';
+  initDayMap(stops);
 }
 function addFields(di){return '<input id="a_n" placeholder="Place name"><div class="g"><select id="a_z"><option value="d1">District 1</option><option value="thao">Thảo Điền</option><option value="d3">D3 / Tân Định</option><option value="night">Night</option><option value="base">Base</option></select><input id="a_t" placeholder="Time (optional)"></div><input id="a_addr" placeholder="Address (optional)"><textarea id="a_note" placeholder="Note (optional)"></textarea><button class="btn" onclick="addPlace('+di+')">Add to '+state.data.days[di].tab+'</button>';}
 
@@ -383,8 +408,9 @@ function renderShots(){
 function setSort(s){sort=s;render();}
 function toggleEdit(){editing=!editing;addOpen=false;render();}
 function toggleAdd(){addOpen=!addOpen;render();}
-function toggleDone(ev,id){ev.stopPropagation();state.done[id]=!state.done[id];persist();render();}
-function cyclePri(ev,id){ev.stopPropagation();const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();render();}
+function updateProg(){const d=state.data.days[cur];const dn=d.stops.filter(s=>state.done[s.id]).length;const el=document.querySelector('.prog');if(el)el.textContent=dn+'/'+d.stops.length;}
+function toggleDone(ev,id){ev.stopPropagation();state.done[id]=!state.done[id];persist();const row=document.querySelector('.stoprow[data-id="'+id+'"]');if(row)row.classList.toggle('done',!!state.done[id]);updateProg();}
+function cyclePri(ev,id){ev.stopPropagation();const s=findStop(id);if(!s)return;const i=PRIS.indexOf(s.pri||'none');s.pri=PRIS[(i+1)%PRIS.length];if(s.pri==='none')delete s.pri;persist();if(sort==='pri'){render();return;}const btn=ev.target;btn.className='pri '+(s.pri||'none');btn.textContent=PRILBL[s.pri||'none'];}
 function setNote(id,v){const s=findStop(id);if(s){s.note=v;persist();}}
 function move(ev,id,dir){ev.stopPropagation();const d=state.data.days[cur],i=d.stops.findIndex(s=>s.id===id),j=i+dir;if(i<0||j<0||j>=d.stops.length)return;const t=d.stops[i];d.stops[i]=d.stops[j];d.stops[j]=t;sort='plan';persist();render();}
 function del(ev,id){ev.stopPropagation();const d=state.data.days[cur];d.stops=d.stops.filter(s=>s.id!==id);persist();render();}
